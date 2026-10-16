@@ -1,0 +1,1 @@
+window.WETTER_DATEN = {"erzeugt_von": "scraper/wetter_holen.py", "abgerufen": "2026-10-16T11:51+00:00", "zeitpunkt": "2026-10-16T11:30:00+00:00", "station": "Kösching", "temperatur": 10.1, "symbol": "fog", "niederschlag_mm_h": 0.0, "wind_kmh": 7.2, "luftfeuchte": 98, "bewoelkung": 100, "warnungen": [], "quelle": "https://brightsky.dev"};

@@ -1,0 +1,183 @@
+/* Klimadashboard Ingolstadt – Gestaltung nach dem CI von 2035.de
+   Farben und Schriften aus dem Avada-Theme von 2035.de (Global Colors /
+   Typography). Schriften liegen lokal, damit keine Anfrage an Google geht. */
+
+@font-face { font-family: "Unbounded"; font-weight: 600; font-display: swap; src: url("fonts/unbounded-latin-600-normal.woff2") format("woff2"); }
+@font-face { font-family: "Unbounded"; font-weight: 700; font-display: swap; src: url("fonts/unbounded-latin-700-normal.woff2") format("woff2"); }
+@font-face { font-family: "Poppins"; font-weight: 400; font-display: swap; src: url("fonts/poppins-latin-400-normal.woff2") format("woff2"); }
+@font-face { font-family: "Poppins"; font-weight: 500; font-display: swap; src: url("fonts/poppins-latin-500-normal.woff2") format("woff2"); }
+@font-face { font-family: "Poppins"; font-weight: 600; font-display: swap; src: url("fonts/poppins-latin-600-normal.woff2") format("woff2"); }
+
+:root {
+  /* 2035.de awb-color1 … 8 */
+  --dunkel: #212121;
+  --gelb: #f0be50;
+  --grau: #f2f3f5;
+  --orange: #e65c2a;
+  --blau: #4c4dee;
+  --lila: #974cda;
+  --gruen: #c2f35e;
+  --hellgruen: #e0fa7a;
+
+  --text: var(--blau);
+  --text-dunkel: #1d1e5c;
+  --text-leise: #4a4b8f;
+  --hintergrund: var(--hellgruen);
+  --karte: var(--gruen);
+  --flaeche: #ffffff;
+  --rand: rgba(76, 77, 238, .18);
+
+  --font-titel: "Unbounded", Arial, Helvetica, sans-serif;
+  --font-text: "Poppins", Arial, Helvetica, sans-serif;
+  --rund-gross: 40px;
+  --rund: 22px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  font-family: var(--font-text); color: var(--text); background: var(--hintergrund);
+  font-size: 17px; line-height: 1.6; -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; }
+a:focus-visible, button:focus-visible, [tabindex]:focus-visible {
+  outline: 3px solid var(--dunkel); outline-offset: 3px; border-radius: 6px;
+}
+.huelle { max-width: 1180px; margin: 0 auto; padding: 0 24px; }
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+}
+
+/* ---------- Kopf ---------- */
+.kopf { padding: 22px 0 10px; }
+.kopf .huelle { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+.marke {
+  font-family: var(--font-titel); font-weight: 700; font-size: 1.05rem; line-height: 1.05;
+  color: var(--dunkel); text-decoration: none; letter-spacing: -.01em;
+}
+.marke small { display: block; font-family: var(--font-text); font-weight: 500; font-size: .72rem; color: var(--text-leise); letter-spacing: 0; }
+.kopf-platz { margin-left: auto; }
+.prototyp {
+  font-size: .72rem; font-weight: 600; text-transform: uppercase; letter-spacing: .06em;
+  background: var(--dunkel); color: var(--hellgruen); border-radius: 999px; padding: 4px 12px;
+}
+
+/* ---------- Seitenkopf ---------- */
+.held { padding: 34px 0 10px; }
+h1 {
+  font-family: var(--font-titel); font-weight: 700; font-size: clamp(2rem, 5.2vw, 3.4rem);
+  line-height: 1.05; letter-spacing: -.02em; max-width: 16ch; margin-bottom: 22px;
+}
+.einleitung { font-size: clamp(1.05rem, 2vw, 1.25rem); max-width: 46ch; margin-bottom: 28px; }
+h2 {
+  font-family: var(--font-titel); font-weight: 700; font-size: clamp(1.45rem, 3vw, 2rem);
+  line-height: 1.15; letter-spacing: -.01em; margin: 0 0 14px;
+}
+h3 {
+  font-family: var(--font-titel); font-weight: 600; font-size: 1.08rem; line-height: 1.25;
+  margin: 0 0 6px;
+}
+p { max-width: 68ch; }
+
+/* ---------- Themen-Navigation (Pillen wie auf 2035.de) ---------- */
+.themen { display: flex; flex-wrap: wrap; gap: 12px; margin: 0 0 8px; }
+.pille {
+  font-family: var(--font-titel); font-weight: 600; font-size: .95rem; text-decoration: none;
+  background: var(--blau); color: #fff; border-radius: 999px; padding: 13px 26px;
+  border: 2px solid var(--blau); transition: background .15s ease, color .15s ease;
+}
+.pille:hover { background: var(--dunkel); border-color: var(--dunkel); }
+.pille[aria-current="page"] { background: transparent; color: var(--blau); }
+@media (max-width: 600px) {
+  .themen { gap: 8px; }
+  .pille { font-size: .8rem; padding: 9px 16px; }
+}
+
+/* ---------- Abschnitte und Raster ---------- */
+.abschnitt { padding: 44px 0 8px; }
+.abschnitt > .huelle > p { margin-bottom: 18px; }
+.raster { display: grid; gap: 22px; grid-template-columns: repeat(12, 1fr); }
+.raster > * { grid-column: span 12; min-width: 0; }
+@media (min-width: 860px) {
+  .b4 { grid-column: span 4; }
+  .b5 { grid-column: span 5; }
+  .b6 { grid-column: span 6; }
+  .b7 { grid-column: span 7; }
+  .b8 { grid-column: span 8; }
+}
+
+.karte {
+  background: var(--karte); border-radius: var(--rund-gross); padding: 30px 32px 28px;
+}
+.karte.weiss { background: var(--flaeche); }
+.karte .unterzeile { font-size: .9rem; color: var(--text-leise); margin-bottom: 14px; }
+.karte .fuss { font-size: .78rem; color: var(--text-leise); margin-top: 12px; line-height: 1.5; }
+.karte .fuss a { color: var(--text-dunkel); }
+@media (max-width: 600px) {
+  .karte { border-radius: 28px; padding: 22px 18px 20px; }
+}
+
+/* Kachel als Link zur Themenseite */
+a.karte { display: block; text-decoration: none; transition: transform .15s ease; }
+a.karte:hover { transform: translateY(-3px); }
+.weiter { font-family: var(--font-titel); font-weight: 600; font-size: .85rem; margin-top: 10px; display: inline-block; }
+
+/* ---------- Kennzahlen ---------- */
+.kennzahlen { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+.kennzahl { background: var(--karte); border-radius: var(--rund); padding: 18px 20px 18px; }
+.kennzahl .k-label { font-size: .82rem; font-weight: 500; line-height: 1.35; min-height: 2.7em; }
+.kennzahl .k-wert {
+  font-family: var(--font-titel); font-weight: 700; font-size: 1.5rem; line-height: 1.15;
+  margin: 6px 0 4px; color: var(--text-dunkel); white-space: nowrap;
+}
+.kennzahl .k-unter { font-size: .8rem; color: var(--text-leise); line-height: 1.4; }
+
+/* ---------- Diagramme ---------- */
+.diagramm { width: 100%; height: 340px; }
+.diagramm.klein { height: 220px; }
+.diagramm.hoch { height: 420px; }
+.umschalter { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 12px; }
+.umschalter button {
+  font: inherit; font-size: .85rem; font-weight: 500; cursor: pointer;
+  background: transparent; color: var(--blau); border: 2px solid var(--blau);
+  border-radius: 999px; padding: 5px 14px;
+}
+.umschalter button[aria-pressed="true"] { background: var(--blau); color: #fff; }
+
+/* Fortschrittsbalken */
+.balken-zeile { margin: 10px 0 14px; }
+.balken-zeile .b-text { display: flex; justify-content: space-between; gap: 12px; font-size: .9rem; margin-bottom: 6px; }
+.balken-zeile .b-text strong { font-family: var(--font-titel); font-weight: 600; color: var(--text-dunkel); }
+.balken { height: 18px; border-radius: 999px; background: rgba(76, 77, 238, .14); overflow: hidden; }
+.balken span { display: block; height: 100%; border-radius: 999px; background: var(--blau); }
+.balken.soll span { background: var(--dunkel); }
+
+/* Wetter */
+.wetter { display: flex; align-items: center; gap: 22px; flex-wrap: wrap; }
+.wetter-temp { font-family: var(--font-titel); font-weight: 700; font-size: 3.2rem; line-height: 1; color: var(--text-dunkel); }
+.wetter-werte { display: grid; grid-template-columns: auto auto; gap: 2px 16px; font-size: .88rem; }
+.wetter-werte dt { color: var(--text-leise); }
+.wetter-werte dd { font-weight: 600; }
+.warnung { background: var(--orange); color: #fff; border-radius: var(--rund); padding: 12px 16px; margin-top: 14px; font-size: .9rem; }
+.warnung strong { font-family: var(--font-titel); font-weight: 600; }
+.keine-warnung { margin-top: 14px; font-size: .88rem; }
+
+/* Liste offener Daten */
+.luecken { list-style: none; display: grid; gap: 10px; }
+.luecken li { border: 2px dashed var(--blau); border-radius: var(--rund); padding: 12px 16px; font-size: .92rem; }
+.luecken strong { font-family: var(--font-titel); font-weight: 600; font-size: .9rem; }
+
+/* ---------- Fuss ---------- */
+.seitenfuss { margin-top: 60px; padding: 36px 0 48px; background: var(--blau); color: #fff; font-size: .88rem; }
+.seitenfuss a { color: #fff; }
+.seitenfuss .huelle { display: grid; gap: 14px; }
+.seitenfuss ul { list-style: none; display: grid; gap: 4px; }
+.seitenfuss h2 { font-size: 1.1rem; margin-bottom: 6px; }
+.hinweis-privat { font-size: .82rem; opacity: .9; max-width: 80ch; }
+
+.ladehinweis { font-size: .9rem; color: var(--text-leise); }
+
+/* ---------- Einbettung (einbetten.html) ---------- */
+body.eingebettet { background: transparent; }
+body.eingebettet .karte { margin: 0; }

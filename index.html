@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; base-uri 'self'">
+<title>Klimadashboard Ingolstadt</title>
+<meta name="description" content="Wo steht Ingolstadt auf dem Weg zur Klimaneutralität 2035? Zahlen zu Klima, Emissionen, erneuerbarer Energie und Mobilität.">
+<link rel="stylesheet" href="assets/style.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%234c4dee'/%3E%3Ctext x='32' y='42' font-family='Arial' font-weight='700' font-size='26' text-anchor='middle' fill='%23e0fa7a'%3E35%C2%B0%3C/text%3E%3C/svg%3E">
+</head>
+<body>
+<header data-kopf></header>
+<main>
+  <section class="held">
+    <div class="huelle">
+      <h1>Klimadashboard Ingolstadt</h1>
+      <p class="einleitung">Wo steht Ingolstadt in Sachen Emissionen? Wie wirkt sich der Klimawandel konkret auf die Stadt aus? Wie schnell kommt Solarstrom dazu? Die wichtigsten Zahlen auf dem Weg zur Klimaneutralität 2035.</p>
+      <nav data-themen></nav>
+    </div>
+  </section>
+  <section class="abschnitt">
+    <div class="huelle">
+      <div data-modul="kennzahlen"></div>
+    </div>
+  </section>
+  <section class="abschnitt">
+    <div class="huelle">
+      <h2>Wetter & Klima</h2>
+      <div class="raster">
+        <div class="b5" data-modul="wetter" data-mehr="klima.html"></div>
+        <div class="b7 weiss" data-modul="temperatur" data-klein data-mehr="klima.html"></div>
+      </div>
+    </div>
+  </section>
+  <section class="abschnitt">
+    <div class="huelle">
+      <h2>Emissionen</h2>
+      <div class="raster">
+        <div class="b6" data-modul="reduktion" data-mehr="emissionen.html"></div>
+        <div class="b6 weiss" data-modul="endenergie" data-klein data-mehr="emissionen.html"></div>
+      </div>
+    </div>
+  </section>
+  <section class="abschnitt">
+    <div class="huelle">
+      <h2>Erneuerbare</h2>
+      <div class="raster">
+        <div class="b7 weiss" data-modul="pv-bestand" data-klein data-mehr="erneuerbare.html"></div>
+        <div class="b5" data-modul="pv-ziel" data-mehr="erneuerbare.html"></div>
+      </div>
+    </div>
+  </section>
+  <section class="abschnitt">
+    <div class="huelle">
+      <h2>Mobilität</h2>
+      <div class="raster">
+        <div class="b12 weiss" data-modul="ladepunkte" data-klein data-mehr="mobilitaet.html"></div>
+      </div>
+    </div>
+  </section>
+</main>
+<footer data-fuss></footer>
+<script src="assets/vendor/echarts.min.js"></script>
+<script src="data/klima.js"></script>
+<script src="data/wetter.js"></script>
+<script src="assets/kd.js"></script>
+<script>Klimadashboard.start();</script>
+</body>
+</html>
