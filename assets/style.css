@@ -124,8 +124,10 @@ a.karte:hover { transform: translateY(-3px); }
 .weiter { font-family: var(--font-titel); font-weight: 600; font-size: .85rem; margin-top: 10px; display: inline-block; }
 
 /* ---------- Kennzahlen ---------- */
-.kennzahlen { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
-@media (min-width: 1000px) { .kennzahlen { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); } }
+/* Feste Spaltenzahl statt auto-fit: fuenf Kacheln sollen nie als 4 + 1 umbrechen. */
+.kennzahlen { display: grid; gap: 16px; grid-template-columns: repeat(2, 1fr); }
+@media (min-width: 700px) { .kennzahlen { grid-template-columns: repeat(3, 1fr); } }
+@media (min-width: 1100px) { .kennzahlen { grid-template-columns: repeat(5, 1fr); } }
 .kennzahl { background: var(--karte); border-radius: var(--rund); padding: 18px 20px 18px; }
 .kennzahl .k-label { font-size: .82rem; font-weight: 500; line-height: 1.35; min-height: 2.7em; }
 .kennzahl .k-wert {
