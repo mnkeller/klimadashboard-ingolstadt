@@ -81,6 +81,12 @@ Aktuelles Wetter und Unwetterwarnungen (Deutscher Wetterdienst über
 python3 scraper/wetter_holen.py
 ```
 
+Automatisch per GitHub Actions: `seite.yml` holt das Wetter alle 30 Minuten
+und veröffentlicht die Seite damit auf GitHub Pages, ohne das Wetter zu
+committen. `klima.yml` baut montags die Klimadaten neu und committet sie,
+wenn sich etwas geändert hat. Beide lassen nur Daten durch, die
+`scraper/pruefen.py` für plausibel hält.
+
 | Quelle | Inhalt |
 |---|---|
 | Deutscher Wetterdienst, Station Kösching (02700) | Jahresmittel, heiße Tage, Tropennächte, Frosttage seit 1961; Referenz 1971–2000 wie im Fortschrittsbericht |

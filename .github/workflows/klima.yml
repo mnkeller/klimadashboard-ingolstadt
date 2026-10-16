@@ -1,0 +1,46 @@
+# Klimadaten einmal pro Woche neu bauen (DWD, Marktstammdatenregister,
+# Ladesaeulenregister). Committet data/klima.* nur, wenn pruefen.py gruen
+# ist und sich mehr als das Erzeugungsdatum geaendert hat.
+name: Klimadaten bauen
+
+on:
+  schedule:
+    - cron: "17 4 * * 1"     # montags 04:17 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: daten-commit
+  cancel-in-progress: false
+
+jobs:
+  klima:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Bisherigen Stand merken
+        run: cp data/klima.json "$RUNNER_TEMP/klima_alt.json"
+
+      - name: Bauen
+        working-directory: scraper
+        run: python3 klima_bauen.py --neu
+
+      - name: Pruefen
+        run: python3 scraper/pruefen.py klima --alt "$RUNNER_TEMP/klima_alt.json"
+
+      - name: Committen, falls geaendert
+        run: |
+          if git diff --quiet -I'"erzeugt_am"' -- data/klima.json; then
+            echo "Keine Aenderung."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/klima.json data/klima.js
+          git commit -m "Klimadaten $(date -u +'%Y-%m-%d')"
+          git pull --rebase
+          git push

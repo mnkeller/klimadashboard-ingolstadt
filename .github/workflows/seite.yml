@@ -1,0 +1,64 @@
+# Baut die Seite und veroeffentlicht sie auf GitHub Pages, dabei mit frisch
+# geholtem Wetter. Das Wetter wird nicht committet: alle 30 Minuten ein
+# Commit waeren ~17 500 Commits im Jahr. data/wetter.* im Repo ist nur der
+# Notfallstand, falls weder Bright Sky noch die laufende Seite erreichbar sind.
+#
+# Voraussetzung: Settings -> Pages -> Source "GitHub Actions".
+name: Seite veroeffentlichen
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "7,37 * * * *"   # nicht zur vollen Stunde, da sind die Runner voll
+  workflow_run:
+    # Commits mit GITHUB_TOKEN loesen kein "push" aus, daher hier eigens.
+    workflows: ["Klimadaten bauen"]
+    types: [completed]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  seite:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Wetter abrufen und pruefen
+        id: wetter
+        continue-on-error: true
+        run: python3 scraper/wetter_holen.py && python3 scraper/pruefen.py wetter
+
+      - name: Sonst bisheriges Wetter der laufenden Seite behalten
+        if: steps.wetter.outcome == 'failure'
+        run: |
+          git checkout -- data/wetter.json data/wetter.js
+          seite="https://mnkeller.github.io/klimadashboard-ingolstadt/data"
+          if curl -fsS -o "$RUNNER_TEMP/wetter.json" "$seite/wetter.json" &&
+             curl -fsS -o "$RUNNER_TEMP/wetter.js" "$seite/wetter.js"; then
+            cp "$RUNNER_TEMP/wetter.json" "$RUNNER_TEMP/wetter.js" data/
+            echo "::warning::Wetterabruf fehlgeschlagen, Stand der laufenden Seite uebernommen."
+          else
+            echo "::warning::Wetterabruf fehlgeschlagen, Stand aus dem Repo verwendet."
+          fi
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+      - id: deploy
+        uses: actions/deploy-pages@v4
