@@ -125,6 +125,7 @@ a.karte:hover { transform: translateY(-3px); }
 
 /* ---------- Kennzahlen ---------- */
 .kennzahlen { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+@media (min-width: 1000px) { .kennzahlen { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); } }
 .kennzahl { background: var(--karte); border-radius: var(--rund); padding: 18px 20px 18px; }
 .kennzahl .k-label { font-size: .82rem; font-weight: 500; line-height: 1.35; min-height: 2.7em; }
 .kennzahl .k-wert {
