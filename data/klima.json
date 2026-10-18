@@ -1,6 +1,6 @@
 {
  "erzeugt_von": "scraper/klima_bauen.py",
- "erzeugt_am": "2026-10-16",
+ "erzeugt_am": "2026-10-18",
  "klima": {
   "station": "Kösching",
   "station_id": "02700",
@@ -862,14 +862,14 @@
    {
     "jahr": 2026,
     "vollstaendig": false,
-    "bis": "15.10.2026",
+    "bis": "17.10.2026",
     "mitteltemperatur": null,
     "heisse_tage": 40,
     "sommertage": 84,
     "tropennaechte": 4,
     "frosttage": 45,
     "eistage": 11,
-    "niederschlag_mm": 387,
+    "niederschlag_mm": 388,
     "abweichung": null
    }
   ],
@@ -3021,20 +3021,20 @@
    },
    {
     "jahr": 2026,
-    "zubau_anzahl": 1230,
-    "zubau_kw": 17553,
-    "bestand_anzahl": 9578,
-    "bestand_kw": 123511,
+    "zubau_anzahl": 1243,
+    "zubau_kw": 17654,
+    "bestand_anzahl": 9591,
+    "bestand_kw": 123612,
     "bestand_kwh": 0,
-    "zubau_kw_dach": 9234,
-    "bestand_kw_dach": 104267,
-    "zubau_anzahl_dach": 598,
+    "zubau_kw_dach": 9328,
+    "bestand_kw_dach": 104361,
+    "zubau_anzahl_dach": 606,
     "zubau_kw_freiflaeche": 7496,
     "bestand_kw_freiflaeche": 16399,
     "zubau_anzahl_freiflaeche": 2,
-    "zubau_kw_stecker": 822,
-    "bestand_kw_stecker": 2845,
-    "zubau_anzahl_stecker": 630
+    "zubau_kw_stecker": 829,
+    "bestand_kw_stecker": 2852,
+    "zubau_anzahl_stecker": 635
    }
   ],
   "in_planung_kw": 14471,
@@ -3648,15 +3648,15 @@
     "zubau_kw": 4656,
     "bestand_anzahl": 3547,
     "bestand_kw": 22467,
-    "bestand_kwh": 33160
+    "bestand_kwh": 33158
    },
    {
     "jahr": 2026,
-    "zubau_anzahl": 888,
-    "zubau_kw": 4579,
-    "bestand_anzahl": 4422,
-    "bestand_kw": 27032,
-    "bestand_kwh": 40199
+    "zubau_anzahl": 896,
+    "zubau_kw": 4614,
+    "bestand_anzahl": 4430,
+    "bestand_kw": 27068,
+    "bestand_kwh": 40256
    }
   ],
   "quelle": "https://www.marktstammdatenregister.de/MaStR/Einheit/Einheiten/ErweiterteOeffentlicheEinheitenuebersicht"
