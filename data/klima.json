@@ -3823,6 +3823,14 @@
    {
     "name": "Auswertung geförderte Wärmepumpen Ingolstadt bis 31.05.2025_korrigiert.xlsx",
     "stand": "2025-06-26"
+   },
+   {
+    "name": "2025 Jährliche Gesamtemissionen Verwaltung.xlsx",
+    "stand": "2026-10-23"
+   },
+   {
+    "name": "Verbrauchsdaten 2024 aus Energiebericht 2025.xlsx",
+    "stand": "2026-10-23"
    }
   ],
   "thg": {
@@ -5107,6 +5115,173 @@
    "plz": "85049",
    "stand": "16.06.2025",
    "programme": "MAP, MAP20, BEG EM (BAFA)"
+  },
+  "verwaltung": {
+   "einheit": "t CO2e",
+   "werte": [
+    {
+     "jahr": 2019,
+     "thg_t": {
+      "waerme": 6572,
+      "strom": 5196,
+      "mobilitaet": 3010,
+      "beschaffung": 780,
+      "abfall_wasser": 58,
+      "summe": 15615
+     }
+    },
+    {
+     "jahr": 2021,
+     "thg_t": {
+      "waerme": 6837,
+      "strom": 361,
+      "mobilitaet": 3133,
+      "beschaffung": 1149,
+      "abfall_wasser": 60,
+      "summe": 11540
+     }
+    },
+    {
+     "jahr": 2023,
+     "thg_t": {
+      "waerme": 5390,
+      "strom": 407,
+      "mobilitaet": 3375,
+      "beschaffung": 467,
+      "abfall_wasser": 61,
+      "summe": 9699
+     }
+    }
+   ],
+   "pfad": [
+    {
+     "jahr": 2023,
+     "thg_t": 9699
+    },
+    {
+     "jahr": 2025,
+     "thg_t": 6987
+    },
+    {
+     "jahr": 2027,
+     "thg_t": 4274
+    },
+    {
+     "jahr": 2030,
+     "thg_t": 1562
+    }
+   ],
+   "ziel_jahr": 2030,
+   "ziel_t": 1562,
+   "hinweis": "Zielpfad linear bis zum Zielwert 10 % des Basisjahres (Rest wird ausgeglichen)."
+  },
+  "liegenschaften": {
+   "jahr": 2024,
+   "gruppen": [
+    {
+     "name": "Schulgebäude",
+     "anzahl": 33,
+     "flaeche_m2": 236518,
+     "strom_kwh": 5040255,
+     "waerme_mwh": 20307,
+     "wasser_m3": 70129
+    },
+    {
+     "name": "Kindertagesstätten",
+     "anzahl": 25,
+     "flaeche_m2": 16658,
+     "strom_kwh": 611210,
+     "waerme_mwh": 939,
+     "wasser_m3": 9251
+    },
+    {
+     "name": "Jugendeinrichtungen",
+     "anzahl": 4,
+     "flaeche_m2": 4604,
+     "strom_kwh": 111627,
+     "waerme_mwh": 466,
+     "wasser_m3": 2005
+    },
+    {
+     "name": "Museen",
+     "anzahl": 7,
+     "flaeche_m2": 13561,
+     "strom_kwh": 170272,
+     "waerme_mwh": 999,
+     "wasser_m3": 848
+    },
+    {
+     "name": "Kulturelle Einrichtungen",
+     "anzahl": 8,
+     "flaeche_m2": 22621,
+     "strom_kwh": 751076,
+     "waerme_mwh": 2144,
+     "wasser_m3": 3932
+    },
+    {
+     "name": "Verwaltungsgebäude",
+     "anzahl": 11,
+     "flaeche_m2": 28279,
+     "strom_kwh": 796147,
+     "waerme_mwh": 1981,
+     "wasser_m3": 6283
+    },
+    {
+     "name": "Feuerwehrgebäude",
+     "anzahl": 18,
+     "flaeche_m2": 11875,
+     "strom_kwh": 437141,
+     "waerme_mwh": 970,
+     "wasser_m3": 2727
+    },
+    {
+     "name": "Friedhofsgebäude",
+     "anzahl": 10,
+     "flaeche_m2": 4712,
+     "strom_kwh": 84114,
+     "waerme_mwh": 576,
+     "wasser_m3": 9940
+    },
+    {
+     "name": "Bezirkssportanlagen",
+     "anzahl": 6,
+     "flaeche_m2": 22177,
+     "strom_kwh": 669650,
+     "waerme_mwh": 2807,
+     "wasser_m3": 9989
+    },
+    {
+     "name": "Ballspielhallen",
+     "anzahl": 10,
+     "flaeche_m2": 15572,
+     "strom_kwh": 264758,
+     "waerme_mwh": 931,
+     "wasser_m3": 2669
+    },
+    {
+     "name": "Techn. Betriebsstätten",
+     "anzahl": 8,
+     "flaeche_m2": 17996,
+     "strom_kwh": 608869,
+     "waerme_mwh": 2063,
+     "wasser_m3": 13826
+    },
+    {
+     "name": "WC-Anlagen",
+     "anzahl": 3,
+     "flaeche_m2": 183,
+     "strom_kwh": 7790,
+     "waerme_mwh": 43,
+     "wasser_m3": 1343
+    }
+   ],
+   "summe": {
+    "anzahl": 143,
+    "flaeche_m2": 394756,
+    "strom_kwh": 9552909,
+    "waerme_mwh": 34226
+   },
+   "hinweis": "Summen je Gebäudegruppe laut Energiebericht 2025. Bei einzelnen Gebäuden fehlen Wärmewerte, die Fläche ist aber enthalten; Werte je m² sind deshalb nur Näherungen."
   }
  }
 }

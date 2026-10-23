@@ -153,6 +153,22 @@ def pruefe_stadt(st):
             fehler.append(f"Stadt: Wärmepumpen-Jahre nicht lückenlos: {jahre}")
         if any(w["anzahl"] < 0 for w in wp["werte"]):
             fehler.append("Stadt: negative Wärmepumpen-Zahl")
+    v = st.get("verwaltung")
+    if v:
+        for w in v["werte"]:
+            x = w["thg_t"]
+            teile = x["waerme"] + x["strom"] + x["mobilitaet"] + x["beschaffung"] + x["abfall_wasser"]
+            if abs(teile - x["summe"]) > 3:
+                fehler.append(f"Stadt: Verwaltung {w['jahr']}: Bereiche {teile} ≠ Summe {x['summe']}")
+        if not 0 < v["ziel_t"] < v["werte"][0]["thg_t"]["summe"]:
+            fehler.append("Stadt: Verwaltung: Zielwert unplausibel")
+    li = st.get("liegenschaften")
+    if li:
+        if len(li["gruppen"]) < 10 or any(g["flaeche_m2"] <= 0 for g in li["gruppen"]):
+            fehler.append("Stadt: Liegenschaften: Gruppen unvollständig")
+        sm = li["summe"]
+        if sm["flaeche_m2"] != sum(g["flaeche_m2"] for g in li["gruppen"]) or not 1e6 < sm["strom_kwh"] < 1e8:
+            fehler.append("Stadt: Liegenschaften: Summen unplausibel")
     return fehler
 
 

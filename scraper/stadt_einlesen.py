@@ -20,9 +20,11 @@ die Stadt CC BY 4.0 freigegeben hat:
   2035.
 
 Dazu kommen aus Teil B, nach Freigabe ebenfalls CC BY 4.0, die geforderten
-Waermepumpen (nur Jahressummen) und die Eignungsgebiete, die als bereinigte
-Karte nach data/eignungsgebiete.json gehen (nur Kategorie und Name). Verwaltung
-und Liegenschaften folgen.
+Waermepumpen (nur Jahressummen), die Eignungsgebiete, die als bereinigte
+Karte nach data/eignungsgebiete.json gehen (nur Kategorie und Name), die
+Emissionen der Stadtverwaltung (Ergebnisse Gesamt) und die Verbrauchswerte
+der Liegenschaften 2024 (nur Summen je Gebaeudegruppe, keine einzelnen
+Gebaeude).
 
 Reiter werden ueber den Namen, Spalten ueber ihre Ueberschrift gefunden,
 nicht ueber feste Zellen. Fehlt eine Ueberschrift, bricht das Skript ab,
@@ -51,6 +53,8 @@ LIZENZ_URL = "https://creativecommons.org/licenses/by/4.0/deed.de"
 BILANZ_MUSTER = "*THG-Bilanz*.xlsx"
 FAHRPLAN_MUSTER = "*Reduktionsfahrplan*.xlsx"
 WP_MUSTER = "*Wärmepumpen*.xlsx"
+VERW_MUSTER = "*Gesamtemissionen Verwaltung*.xlsx"
+LIEG_MUSTER = "*Verbrauchsdaten*.xlsx"
 GEO_MUSTER = "*eignungsgebiete*.geojson"
 
 NS = {
@@ -456,6 +460,68 @@ def eignungsgebiete(pfad):
             "type": "FeatureCollection", "features": features}
 
 
+def verwaltung(mappe):
+    """Emissionen der Stadtverwaltung nach Bereich (Bilanzjahre) und Zielpfad bis 2030."""
+    b = mappe.blatt("Ergebnisse Gesamt")
+    tz, _ = b.finde("Emissionen", ab_zeile=15)
+    kz, jahr_sp = b.finde("Jahr", ab_zeile=tz)
+    felder = [("waerme", "Wärme / Kälte"), ("strom", "Strom"), ("mobilitaet", "Mobilität"),
+              ("beschaffung", "Beschaffung"), ("abfall_wasser", "Abfall / Wasser")]
+    spalten = {k: b.finde(t, zeilen={kz})[1] for k, t in felder}
+    summe_sp = b.finde("CO2e-Emissionen", zeilen={kz})[1]
+    # Texte nach der Jahreszahl: Bilanzjahre haben Werte je Bereich, Planjahre nur die Summe.
+    werte, pfad = [], []
+    for j, z in sorted(b.jahre(jahr_sp, kz, kz + 8).items()):
+        gesamt = b.zahl(z, summe_sp)
+        if gesamt is None:
+            continue
+        teile = {k: b.zahl(z, sp) for k, sp in spalten.items()}
+        if all(v is not None for v in teile.values()):
+            if abs(sum(teile.values()) - gesamt) > 2:
+                raise Fehler(f"{b.name}: Verwaltung {j}: Bereiche {sum(teile.values()):.0f} ≠ Summe {gesamt:.0f}")
+            werte.append({"jahr": j, "thg_t": dict({k: runde(v) for k, v in teile.items()}, summe=runde(gesamt))})
+        else:
+            pfad.append({"jahr": j, "thg_t": runde(gesamt)})
+    if len(werte) < 2 or not pfad:
+        raise Fehler(f"{b.name}: Verwaltung: Bilanzjahre oder Zielpfad nicht gefunden")
+    ziel = pfad[-1]
+    basis = werte[0]["thg_t"]["summe"]
+    if abs(ziel["thg_t"] - 0.1 * basis) > 2:
+        raise Fehler(f"{b.name}: Ziel {ziel['jahr']} ({ziel['thg_t']}) ist nicht 10 % von {werte[0]['jahr']} ({basis})")
+    return {"einheit": "t CO2e", "werte": werte,
+            "pfad": [{"jahr": werte[-1]["jahr"], "thg_t": werte[-1]["thg_t"]["summe"]}] + pfad,
+            "ziel_jahr": ziel["jahr"], "ziel_t": ziel["thg_t"],
+            "hinweis": "Zielpfad linear bis zum Zielwert 10 % des Basisjahres (Rest wird ausgeglichen)."}
+
+
+def liegenschaften(mappe):
+    """Verbrauch 2024 der staedtischen Gebaeude: nur die Summenzeile je Gruppe."""
+    b = mappe.blatt("spez. Kennwerte")
+    gruppen = []
+    for (z, sp), v in sorted(b.zellen.items()):
+        if sp != 4 or not isinstance(v, str) or not v.endswith(": Mittelwerte und Summen"):
+            continue
+        name = v[: -len(": Mittelwerte und Summen")]
+        # Kopfzeile der Gruppe: letzte Zeile darueber mit "Lfd. Nr." in Spalte C.
+        kopf = max(zz for (zz, ss), w in b.zellen.items() if ss == 3 and w == "Lfd. Nr." and zz < z)
+        if "Netto" not in str(b.zellen.get((kopf, 6))) or "2024" not in str(b.zellen.get((kopf, 7))):
+            raise Fehler(f"{b.name}: Spaltenkopf der Gruppe {name} (Zeile {kopf}) hat sich geändert")
+        anzahl = sum(1 for (zz, ss), w in b.zellen.items()
+                     if ss == 3 and kopf < zz < z and isinstance(w, float))
+        gruppen.append({"name": name, "anzahl": anzahl, "flaeche_m2": runde(b.zahl(z, 6)),
+                        "strom_kwh": runde(b.zahl(z, 7)), "waerme_mwh": runde(b.zahl(z, 8)),
+                        "wasser_m3": runde(b.zahl(z, 9))})
+    if len(gruppen) < 10:
+        raise Fehler(f"{b.name}: nur {len(gruppen)} Gebäudegruppen gefunden, erwartet 12")
+    for g in gruppen:
+        if None in (g["flaeche_m2"], g["strom_kwh"], g["waerme_mwh"]):
+            raise Fehler(f"{b.name}: Gruppe {g['name']}: Summenzeile unvollständig")
+    summe = {k: sum(g[k] for g in gruppen) for k in ("anzahl", "flaeche_m2", "strom_kwh", "waerme_mwh")}
+    return {"jahr": 2024, "gruppen": gruppen, "summe": summe,
+            "hinweis": "Summen je Gebäudegruppe laut Energiebericht 2025. Bei einzelnen Gebäuden fehlen "
+                       "Wärmewerte, die Fläche ist aber enthalten; Werte je m² sind deshalb nur Näherungen."}
+
+
 # ---------------------------------------------------------------- main
 
 def eine_datei(ordner, muster):
@@ -475,6 +541,8 @@ def main():
         b = eine_datei(args.ordner, BILANZ_MUSTER)
         f = eine_datei(args.ordner, FAHRPLAN_MUSTER)
         wp = eine_datei(args.ordner, WP_MUSTER)
+        ve = eine_datei(args.ordner, VERW_MUSTER)
+        li = eine_datei(args.ordner, LIEG_MUSTER)
         geo = glob.glob(os.path.join(args.ordner, GEO_MUSTER))
         if len(geo) != 1:
             raise Fehler(f"{GEO_MUSTER} in {args.ordner}: {len(geo)} Treffer, erwartet genau einer")
@@ -485,7 +553,7 @@ def main():
             "quelle": QUELLE,
             "lizenz": LIZENZ,
             "lizenz_url": LIZENZ_URL,
-            "dateien": [{"name": m.name, "stand": m.stand()} for m in (b, f, wp)],
+            "dateien": [{"name": m.name, "stand": m.stand()} for m in (b, f, wp, ve, li)],
             "thg": bilanz(b),
         }
         daten.update({
@@ -494,6 +562,8 @@ def main():
             "gebaeude": gebaeude(f),
             "neubau": neubau(f),
             "waermepumpen": waermepumpen(wp),
+            "verwaltung": verwaltung(ve),
+            "liegenschaften": liegenschaften(li),
         })
         karte = eignungsgebiete(geo[0])
     except Fehler as e:
@@ -518,6 +588,12 @@ def main():
     print(f"Gebäude heute: {sum(g.values()):,}, davon Gas {g['gas']:,}; Neubau {daten['neubau']['ingolstadt'][-1]['jahr']}: "
           f"{daten['neubau']['ingolstadt'][-1]['waermepumpe']} % Wärmepumpe")
     print(f"Wärmepumpen (BAFA): {sum(r['anzahl'] for r in daten['waermepumpen']['werte'])} Förderfälle")
+    v = daten["verwaltung"]["werte"]
+    print(f"Verwaltung: {v[0]['jahr']} {v[0]['thg_t']['summe']:,} t → {v[-1]['jahr']} {v[-1]['thg_t']['summe']:,} t, "
+          f"Ziel {daten['verwaltung']['ziel_jahr']}: {daten['verwaltung']['ziel_t']:,} t")
+    sm = daten["liegenschaften"]["summe"]
+    print(f"Liegenschaften 2024: {sm['anzahl']} Gebäude, {sm['flaeche_m2']:,} m², {sm['strom_kwh']/1e6:.1f} GWh Strom, "
+          f"{sm['waerme_mwh']/1e3:.1f} GWh Wärme")
     with open(os.path.join(DATEN_VZ, "eignungsgebiete.json"), "w", encoding="utf-8") as fh:
         json.dump(karte, fh, ensure_ascii=False, separators=(",", ":"))
         fh.write("\n")

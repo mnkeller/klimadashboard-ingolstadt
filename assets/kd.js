@@ -315,6 +315,80 @@
     },
   };
 
+  /* ---------- Emissionen: Stadtverwaltung ---------- */
+  var VERW = [
+    { feld: "waerme", name: "Wärme und Kälte", farbe: FARBE.orange },
+    { feld: "strom", name: "Strom", farbe: FARBE.gelb },
+    { feld: "mobilitaet", name: "Mobilität", farbe: FARBE.blau },
+    { feld: "beschaffung", name: "Beschaffung", farbe: FARBE.lila },
+    { feld: "abfall_wasser", name: "Abfall und Wasser", farbe: "#9a9ac8" },
+  ];
+  MODULE.verwaltung = {
+    weiss: true,
+    titel: "Klimaneutrale Verwaltung 2030",
+    bau: function (ziel, opt) {
+      var v = S.verwaltung;
+      var jahre = [];
+      v.werte.forEach(function (w) { jahre.push(w.jahr); });
+      v.pfad.forEach(function (p) { if (jahre.indexOf(p.jahr) < 0) jahre.push(p.jahr); });
+      ziel.appendChild(el("p", "unterzeile", "Treibhausgase der Stadtverwaltung in Tonnen CO₂e. Die Stadt bilanziert alle zwei Jahre, bis 2030 will sie klimaneutral sein."));
+      diagramm(ziel, {
+        grid: raster({ top: window.innerWidth < 600 ? 100 : 70 }),
+        legend: { top: 0, left: 0 },
+        tooltip: { trigger: "axis", axisPointer: { type: "shadow" }, valueFormatter: function (x) { return x == null ? "–" : zahl(x) + " t"; } },
+        xAxis: { type: "category", data: jahre },
+        yAxis: { type: "value", axisLabel: { formatter: function (x) { return zahl(x); } } },
+        series: VERW.map(function (b) {
+          return { type: "bar", stack: "verw", name: b.name, color: b.farbe,
+            data: jahre.map(function (j) { var w = jahr(v.werte, j); return w ? w.thg_t[b.feld] : null; }) };
+        }).concat([{
+          type: "line", name: "Zielpfad", color: FARBE.dunkel, symbolSize: 7, lineStyle: { width: 2, type: "dashed" },
+          data: jahre.map(function (j) { var p = jahr(v.pfad, j); return p && j > v.werte[v.werte.length - 1].jahr ? p.thg_t : null; }),
+        }]),
+      }, opt.klein ? "klein" : "");
+      var erste = v.werte[0], letzte = v.werte[v.werte.length - 1];
+      var minus = Math.round((1 - letzte.thg_t.summe / erste.thg_t.summe) * 100);
+      ziel.appendChild(el("p", "fuss", "Von " + zahl(erste.thg_t.summe) + " t im Jahr " + erste.jahr + " auf " + zahl(letzte.thg_t.summe) +
+        " t im Jahr " + letzte.jahr + ", das sind " + minus + " % weniger. Bis " + v.ziel_jahr + " sollen noch " + zahl(v.ziel_t) +
+        " t übrig sein (10 % von " + erste.jahr + "), die Stadt will den Rest ausgleichen. Der Zielpfad ist eine Gerade, kein Beschluss je Jahr. " +
+        "Mobilität schließt das Pendeln der Beschäftigten ein. Der Wert für " + erste.jahr + " ist bei der Stadt nachgefragt: " +
+        "Eine andere Tabelle nennt dafür 13.547 t. Quelle: " + quelleStadt("Gesamtemissionen der Stadtverwaltung") + "."));
+    },
+  };
+
+  /* ---------- Emissionen: staedtische Gebaeude ---------- */
+  MODULE.liegenschaften = {
+    weiss: true,
+    titel: "Städtische Gebäude",
+    bau: function (ziel, opt) {
+      var l = S.liegenschaften;
+      var g = l.gruppen.slice().sort(function (a, b) { return (b.waerme_mwh + b.strom_kwh / 1000) - (a.waerme_mwh + a.strom_kwh / 1000); });
+      ziel.appendChild(el("p", "unterzeile", "Energieverbrauch " + l.jahr + " nach Gebäudegruppe, in Gigawattstunden (GWh)."));
+      diagramm(ziel, {
+        grid: raster({ top: 40, left: 24, right: 24 }),
+        legend: { top: 0, left: 0 },
+        tooltip: { trigger: "axis", axisPointer: { type: "shadow" }, formatter: function (p) {
+          var x = g[p[0].dataIndex];
+          return "<strong>" + x.name + "</strong> (" + x.anzahl + " Gebäude, " + zahl(x.flaeche_m2) + " m²)<br>" +
+            p[0].marker + "Wärme: " + zahl(x.waerme_mwh / 1000, 1) + " GWh<br>" + p[1].marker + "Strom: " + zahl(x.strom_kwh / 1e6, 1) + " GWh";
+        } },
+        xAxis: { type: "value", axisLabel: { formatter: function (x) { return zahl(x); } } },
+        yAxis: { type: "category", inverse: true, data: g.map(function (x) { return x.name; }), axisLabel: { fontSize: 12 } },
+        series: [
+          { type: "bar", stack: "e", name: "Wärme", color: FARBE.orange, data: g.map(function (x) { return +(x.waerme_mwh / 1000).toFixed(2); }) },
+          { type: "bar", stack: "e", name: "Strom", color: FARBE.gelb, data: g.map(function (x) { return +(x.strom_kwh / 1e6).toFixed(2); }) },
+        ],
+      }, "hoch");
+      var s = l.summe;
+      var schulen = g.filter(function (x) { return x.name === "Schulgebäude"; })[0];
+      ziel.appendChild(el("p", "fuss", zahl(s.anzahl) + " Gebäude mit zusammen " + zahl(s.flaeche_m2) + " m² verbrauchten " + l.jahr + " rund " +
+        zahl(s.waerme_mwh / 1000, 1) + " GWh Wärme und " + zahl(s.strom_kwh / 1e6, 1) + " GWh Strom. Schulen haben mit " +
+        Math.round((schulen.waerme_mwh * 1000 + schulen.strom_kwh) / (s.waerme_mwh * 1000 + s.strom_kwh) * 100) + " % den größten Anteil. " +
+        "Nur ein Jahr, eine Zeitreihe gibt es noch nicht. Bei einzelnen Gebäuden fehlen Wärmewerte. Quelle: " +
+        quelleStadt("Energiebericht 2025, Verbrauchsdaten") + "."));
+    },
+  };
+
   /* ---------- Endenergie nach Sektor ---------- */
   MODULE.endenergie = {
     weiss: true,
@@ -758,8 +832,7 @@
     bau: function (ziel, opt) {
       ziel.appendChild(el("p", "unterzeile", "Diese Themen kommen dazu, sobald Daten vorliegen oder freigegeben sind."));
       var alle = {
-        emissionen: [["Klimaneutrale Verwaltung 2030", "Bilanz der Stadtverwaltung, Daten liegen vor, Darstellung folgt"],
-          ["Städtische Gebäude", "Strom- und Wärmeverbrauch der Liegenschaften, Daten liegen vor, Darstellung folgt"]],
+        emissionen: [["Verbrauch städtischer Gebäude als Zeitreihe", "bisher nur das Jahr 2024"]],
         waerme: [["Beschlossener Wärmeplan", "liegt noch nicht vor, die Karte zeigt den Arbeitsstand vom Januar 2025"],
           ["Wärmepumpen im Bestand", "bekannt sind nur geförderte Anlagen, keine Gesamtzahl"]],
         mobilitaet: [["Radverkehr", "Zählstellen bzw. Stadtradeln-Kilometer"],
@@ -812,7 +885,7 @@
         [B.berichte["2025"].titel, B.berichte["2025"].url],
         [B.berichte["2023"].titel, B.berichte["2023"].url],
       ].map(function (q) { return "<li>" + link(q[1], q[0]) + "</li>"; }).join("") +
-        "<li>" + quelleStadt("Energie- und THG-Bilanz, Reduktionsfahrplan, BAFA-Auswertung und Eignungsgebiete") + "</li>" +
+        "<li>" + quelleStadt("Energie- und THG-Bilanz, Reduktionsfahrplan, Verwaltung, Liegenschaften, BAFA-Auswertung und Eignungsgebiete") + "</li>" +
         "<li>" + B.berichte.auskunft_2026.titel + ", " + B.berichte.auskunft_2026.stand + "</li>";
       fuss.innerHTML = '<div class="huelle">' +
         "<h2>Quellen</h2><ul>" + quellen + "</ul>" +
