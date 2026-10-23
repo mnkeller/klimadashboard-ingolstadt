@@ -45,7 +45,7 @@ python3 -m http.server 8000
 
 Jeder Baustein läuft auch einzeln: `einbetten.html?modul=NAME`. Verfügbar:
 `kennzahlen`, `wetter`, `temperatur`, `kenntage`, `reduktion`, `endenergie`,
-`pv-bestand`, `pv-zubau`, `pv-ziel`, `speicher`, `ladepunkte`, `verkehr`,
+`thg-zeitreihe`, `strom-ee`, `pv-bestand`, `pv-zubau`, `pv-ziel`, `speicher`, `ladepunkte`, `verkehr`,
 `luecken`.
 
 In einen WordPress-Block „Individuelles HTML“:

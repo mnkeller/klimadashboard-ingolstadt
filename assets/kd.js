@@ -490,19 +490,86 @@
     },
   };
 
+  /* ---------- Emissionen: Zeitreihe nach Sektor mit Pfad ---------- */
+  MODULE["thg-zeitreihe"] = {
+    weiss: true,
+    titel: "Treibhausgase seit 2019",
+    bau: function (ziel, opt) {
+      var thg = S.thg;
+      var jahre = thg.pfad.map(function (p) { return p.jahr; });
+      function ist(feld) {
+        return jahre.map(function (j) {
+          var w = jahr(thg.werte, j);
+          return w ? Math.round(w.thg_t[feld] / 1000) : null;
+        });
+      }
+      ziel.appendChild(el("p", "unterzeile", "Ausstoß in Kilotonnen CO₂e (kt): gemessen bis " + thg.bilanzjahr +
+        ", danach der Zielpfad und die Hochrechnung der Stadt."));
+      var mobil = window.innerWidth < 600;
+      diagramm(ziel, {
+        grid: raster({ top: mobil ? 62 : 40 }),
+        legend: { top: 0, left: 0 },
+        tooltip: { trigger: "axis", axisPointer: { type: "shadow" }, valueFormatter: function (v) { return v == null ? "–" : zahl(v) + " kt"; } },
+        xAxis: { type: "category", data: jahre },
+        yAxis: { type: "value", axisLabel: { formatter: function (v) { return zahl(v); } } },
+        series: [
+          { type: "bar", stack: "thg", name: "Wärme", color: FARBE.orange, data: ist("waerme") },
+          { type: "bar", stack: "thg", name: "Strom", color: FARBE.gelb, data: ist("strom") },
+          { type: "bar", stack: "thg", name: "Verkehr", color: FARBE.blau, data: ist("verkehr") },
+          { type: "line", name: "Zielpfad (IKSK)", color: FARBE.dunkel, symbol: "none", lineStyle: { width: 2 },
+            data: thg.pfad.map(function (p) { return Math.round(p.soll_t / 1000); }) },
+          { type: "line", name: "Hochrechnung", color: FARBE.lila, symbol: "none", lineStyle: { width: 2, type: "dashed" },
+            data: thg.pfad.map(function (p) { return p.hochrechnung_t == null ? null : Math.round(p.hochrechnung_t / 1000); }) },
+        ],
+      }, opt.klein ? "klein" : "");
+      var p35 = jahr(thg.pfad, 2035);
+      ziel.appendChild(el("p", "fuss", "Die Hochrechnung der Stadt liegt 2035 bei " + zahl(p35.hochrechnung_t / 1000) +
+        " kt, der Zielpfad bei " + zahl(p35.soll_t / 1000) + " kt. Nur " + jahre[0] + " bis " + thg.bilanzjahr +
+        " sind gemessene Werte. Quelle: " + quelleStadt() + "."));
+    },
+  };
+
+  /* ---------- Erneuerbare: Stromverbrauch gegen lokale Erzeugung ---------- */
+  MODULE["strom-ee"] = {
+    weiss: true,
+    titel: "Strom: Verbrauch und lokale Erzeugung",
+    bau: function (ziel, opt) {
+      var reihe = S.strom.werte;
+      var jetzt = reihe[reihe.length - 1];
+      ziel.appendChild(el("p", "unterzeile", "Stromverbrauch und Erzeugung aus erneuerbaren Quellen in Ingolstadt, in Gigawattstunden (GWh)."));
+      function gwh(feld) { return reihe.map(function (z) { return Math.round(z.ee_mwh[feld] / 1000); }); }
+      diagramm(ziel, {
+        grid: raster({ top: window.innerWidth < 600 ? 62 : 40 }),
+        legend: { top: 0, left: 0 },
+        tooltip: { trigger: "axis", axisPointer: { type: "shadow" }, valueFormatter: function (v) { return zahl(v) + " GWh"; } },
+        xAxis: { type: "category", data: reihe.map(function (z) { return z.jahr; }) },
+        yAxis: { type: "value", axisLabel: { formatter: function (v) { return zahl(v); } } },
+        series: [
+          { type: "bar", stack: "ee", name: "Wasserkraft", color: FARBE.blau, data: gwh("wasser") },
+          { type: "bar", stack: "ee", name: "Solarstrom", color: FARBE.gelb, data: gwh("pv") },
+          { type: "bar", stack: "ee", name: "Biomasse", color: FARBE.lila, data: gwh("biomasse") },
+          { type: "line", name: "Stromverbrauch", color: FARBE.dunkel, symbolSize: 7, lineStyle: { width: 2 },
+            data: reihe.map(function (z) { return Math.round(z.verbrauch_mwh / 1000); }) },
+        ],
+      }, opt.klein ? "klein" : "");
+      ziel.appendChild(el("p", "fuss", jetzt.jahr + " deckten lokale erneuerbare Quellen " +
+        String(jetzt.ee_anteil_prozent).replace(".", ",") + " % des Stromverbrauchs. " + S.strom.hinweis +
+        " Quelle: " + quelleStadt() + "."));
+    },
+  };
+
   /* ---------- Datenluecken ---------- */
   MODULE.luecken = {
     titel: "Was noch fehlt",
     bau: function (ziel, opt) {
-      ziel.appendChild(el("p", "unterzeile", "Diese Themen kommen dazu, sobald Daten freigegeben sind."));
+      ziel.appendChild(el("p", "unterzeile", "Diese Themen kommen dazu, sobald Daten vorliegen oder freigegeben sind."));
       var alle = {
-        emissionen: [["Treibhausgase als Zeitreihe", "nach Sektor seit 2019, liegt vor, Darstellung folgt"],
-          ["Klimaneutrale Verwaltung 2030", "Bilanz der Stadtverwaltung, Freigabe steht aus"],
+        emissionen: [["Klimaneutrale Verwaltung 2030", "Bilanz der Stadtverwaltung, Freigabe steht aus"],
           ["Städtische Gebäude", "Strom- und Wärmeverbrauch der Liegenschaften, Freigabe steht aus"]],
         mobilitaet: [["Radverkehr", "Zählstellen bzw. Stadtradeln-Kilometer"],
           ["Kfz-Verkehr", "Zählstellen, Modal Split (neuere Erhebung angekündigt)"]],
-        energie: [["Wärme", "Wärmepumpen, Fernwärme-Ausbau, Wärmeplan, Freigabe steht aus"],
-          ["Strom", "Verbrauch und lokale Einspeisung pro Jahr, liegt vor, Darstellung folgt"]],
+        energie: [["Wärme", "Wärmepumpen und Eignungsgebiete (Freigabe steht aus), Fernwärme-Ausbau (liegt vor, Seite folgt), kommunale Wärmeplanung"],
+          ["Strom nach 2023", "die Bilanz der Stadt reicht bis 2023, neuere Werte folgen mit der nächsten Bilanz"]],
       };
       var liste = el("ul", "luecken");
       (opt.thema ? alle[opt.thema] : [].concat(alle.emissionen, alle.energie, alle.mobilitaet)).forEach(function (p) {
