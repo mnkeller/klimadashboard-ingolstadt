@@ -15,8 +15,11 @@ Quellen (alle frei abrufbar, keine Zugangsdaten):
   Stromspeicher mit Gemeindeschluessel 09161000.
 - Ladesaeulenregister (Bundesnetzagentur): oeffentliche Ladepunkte in der
   kreisfreien Stadt Ingolstadt.
-- data/klima_bericht.json: von Hand gepflegte Werte aus den
-  Fortschrittsberichten der Stabsstelle Klima (THG-Bilanz, Ziele).
+- data/klima_stadt.json: Energie- und THG-Bilanz und Ausbaupfade der
+  Stabsstelle Klima (CC BY 4.0), lokal erzeugt von stadt_einlesen.py aus
+  den Excel-Dateien der Stadt.
+- data/klima_bericht.json: von Hand gepflegte Einzelwerte aus den
+  Fortschrittsberichten und Auskuenften der Stabsstelle Klima.
 
 Gespeichert werden nur Summen je Jahr. Das Marktstammdatenregister liefert
 auch (maskierte) Betreiberangaben einzelner Anlagen, die landen weder im
@@ -302,6 +305,8 @@ def main():
 
     with open(os.path.join(DATEN_VZ, "klima_bericht.json"), encoding="utf-8") as f:
         bericht = json.load(f)
+    with open(os.path.join(DATEN_VZ, "klima_stadt.json"), encoding="utf-8") as f:
+        stadt = json.load(f)
 
     daten = {
         "erzeugt_von": "scraper/klima_bauen.py",
@@ -322,6 +327,7 @@ def main():
         },
         "laden": laden,
         "bericht": bericht,
+        "stadt": stadt,
     }
 
     os.makedirs(DATEN_VZ, exist_ok=True)

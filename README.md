@@ -92,9 +92,20 @@ wenn sich etwas geändert hat. Beide lassen nur Daten durch, die
 | Deutscher Wetterdienst, Station Kösching (02700) | Jahresmittel, heiße Tage, Tropennächte, Frosttage seit 1961; Referenz 1971–2000 wie im Fortschrittsbericht |
 | Marktstammdatenregister (Gemeindeschlüssel 09161000) | Solaranlagen und Stromspeicher, nur Jahressummen |
 | Ladesäulenregister der Bundesnetzagentur | öffentliche Ladepunkte |
-| `data/klima_bericht.json` | von Hand gepflegte Werte aus den Fortschrittsberichten der Stabsstelle Klima |
+| `data/klima_stadt.json` | Energie- und THG-Bilanz und Reduktionsfahrplan der Stabsstelle Klima (CC BY 4.0), nur Jahressummen |
+| `data/klima_bericht.json` | von Hand gepflegte Einzelwerte aus den Fortschrittsberichten und Auskünften der Stabsstelle Klima |
+
+Die Excel-Dateien der Stadt liegen nur lokal in `input/` (nicht im Git).
+Kommt eine neue Fassung, wird sie lokal eingelesen und das Ergebnis
+committet:
+
+```bash
+python3 scraper/stadt_einlesen.py   # schreibt data/klima_stadt.json
+cd scraper && python3 klima_bauen.py
+```
 
 Was wir zusätzlich bei der Stadt anfragen: [docs/datenanfrage.md](docs/datenanfrage.md).
+Was die Stadt geliefert hat: [docs/datenlieferung-stadt.md](docs/datenlieferung-stadt.md).
 
 ## Lizenz
 

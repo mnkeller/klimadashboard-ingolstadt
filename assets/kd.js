@@ -16,6 +16,7 @@
   var D = window.KLIMA_DATEN;
   var W = window.WETTER_DATEN;
   var B = D && D.bericht;
+  var S = D && D.stadt;  // Bilanz und Pfade der Stabsstelle Klima, CC BY 4.0
 
   var FARBE = {
     blau: "#4c4dee", orange: "#e65c2a", lila: "#974cda", gelb: "#f0be50",
@@ -56,7 +57,12 @@
     aktuellesJahr = solarJetzt.jahr;
   }
   function jahr(reihe, j) { return reihe.filter(function (z) { return z.jahr === j; })[0]; }
-  function pvZiel() { return (B.strom.pv_ziel_2035_dach_kwp || 0) + (B.strom.pv_ziel_2035_freiflaeche_kwp || 0); }
+  function pvZiel() { return S.fahrplan.ziele_2035.pv_dach_kwp + S.fahrplan.ziele_2035.pv_freiflaeche_kwp; }
+  function bilanzJetzt() { return S.thg.werte[S.thg.werte.length - 1]; }
+  // CC BY 4.0 verlangt Urheber und Lizenz bei jeder Verwendung.
+  function quelleStadt(was) {
+    return (was || "Energie- und THG-Bilanz") + " der " + S.quelle + " (" + link(S.lizenz_url, S.lizenz) + ")";
+  }
 
   /* ---------------- ECharts im 2035-CI ---------------- */
   var THEMA = "kd2035";
@@ -126,7 +132,7 @@
   MODULE.kennzahlen = {
     karte: false,
     bau: function (ziel) {
-      var thg = B.thg;
+      var thg = S.thg;
       var kacheln = [
         ["Jahresmittel " + letztesVolles.jahr, zahl(letztesVolles.mitteltemperatur, 1) + " °C",
           vz(letztesVolles.abweichung, 1) + " °C gegenüber " + REF.von + "–" + REF.bis],
@@ -136,8 +142,8 @@
         ["Solarleistung heute", mwp(solarJetzt.bestand_kw),
           zahl(solarJetzt.bestand_anzahl) + " Anlagen im Stadtgebiet"],
         ["Öffentliche Ladepunkte", zahl(D.laden.ladepunkte), "davon " + zahl(D.laden.schnell) + " Schnellladepunkte"],
-        ["CO₂-Minderung pro Jahr", Math.round(thg.reduktion_erreicht_t_pro_jahr / thg.reduktion_erforderlich_t_pro_jahr * 100) + " %",
-          "des nötigen Tempos für 2035 (Bilanz " + B.endenergie.jahr + ")"],
+        ["CO₂-Minderung pro Jahr", Math.round(thg.minderung_erreicht_t_pro_jahr / thg.minderung_noetig_t_pro_jahr * 100) + " %",
+          "des nötigen Tempos für 2035 (Bilanz " + thg.bilanzjahr + ")"],
       ];
       var raster = el("div", "kennzahlen");
       kacheln.forEach(function (k) {
@@ -288,11 +294,11 @@
   MODULE.reduktion = {
     titel: "Auf dem Weg zu 2035",
     bau: function (ziel) {
-      var thg = B.thg;
-      ziel.appendChild(el("p", "unterzeile", "Durchschnittliche CO₂-Minderung pro Jahr seit 2019, in Tonnen."));
-      var max = thg.reduktion_erforderlich_t_pro_jahr;
-      [["Nötig für Klimaneutralität 2035", thg.reduktion_erforderlich_t_pro_jahr, "soll"],
-       ["Tatsächlich erreicht", thg.reduktion_erreicht_t_pro_jahr, ""]].forEach(function (z) {
+      var thg = S.thg;
+      ziel.appendChild(el("p", "unterzeile", "Durchschnittliche CO₂-Minderung pro Jahr seit " + thg.basisjahr + ", in Tonnen."));
+      var max = thg.minderung_noetig_t_pro_jahr;
+      [["Nötig für Klimaneutralität 2035", thg.minderung_noetig_t_pro_jahr, "soll"],
+       ["Tatsächlich erreicht", thg.minderung_erreicht_t_pro_jahr, ""]].forEach(function (z) {
         var zeile = el("div", "balken-zeile");
         zeile.appendChild(el("div", "b-text", "<span>" + z[0] + "</span><strong>" + zahl(z[1]) + " t</strong>"));
         var b = el("div", "balken " + z[2]);
@@ -302,11 +308,10 @@
         zeile.appendChild(b);
         ziel.appendChild(zeile);
       });
-      var w = thg.werte;
-      ziel.appendChild(el("p", "fuss", "Bilanz nach BISKO-Standard, witterungsbereinigt, Bilanzjahr " + B.endenergie.jahr +
-        ". Ausstoß " + w[w.length - 1].jahr + ": " + zahl(w[w.length - 1].t_co2 / 1e6, 2) + " Mio. t CO₂, davon " +
-        thg.anteil_industrie_2021 + " % aus der Industrie. Quelle: " + link(B.berichte["2025"].url, "Fortschrittsbericht 2025") +
-        " und " + link(B.berichte["2023"].url, "2023") + " der Stabsstelle Klima."));
+      var w = bilanzJetzt();
+      ziel.appendChild(el("p", "fuss", "Bilanz nach BISKO-Standard, Bilanzjahr " + thg.bilanzjahr +
+        ". Ausstoß " + w.jahr + ": " + zahl(w.thg_t.summe / 1e6, 2) + " Mio. t CO₂e, davon " +
+        Math.round(w.thg_industrie_t / w.thg_t.summe * 100) + " % aus der Industrie. Quelle: " + quelleStadt() + "."));
     },
   };
 
@@ -315,9 +320,9 @@
     weiss: true,
     titel: "Wofür Energie gebraucht wird",
     bau: function (ziel, opt) {
-      var e = B.endenergie;
-      var gesamt = e.gwh.reduce(function (s, x) { return s + x.gwh; }, 0);
-      ziel.appendChild(el("p", "unterzeile", "Endenergieverbrauch " + e.jahr + ", rund " + zahl(gesamt) + " GWh."));
+      var w = bilanzJetzt();
+      var e = [["Wärme", w.endenergie_mwh.waerme], ["Strom", w.endenergie_mwh.strom], ["Verkehr", w.endenergie_mwh.verkehr]];
+      ziel.appendChild(el("p", "unterzeile", "Endenergieverbrauch " + w.jahr + ", rund " + zahl(w.endenergie_mwh.summe / 1000) + " GWh."));
       diagramm(ziel, {
         tooltip: { trigger: "item", formatter: function (p) { return p.name + ": " + zahl(p.value) + " GWh (" + Math.round(p.percent) + " %)"; } },
         legend: { bottom: 0 },
@@ -326,11 +331,11 @@
           type: "pie", radius: ["48%", "78%"], center: ["50%", "45%"], avoidLabelOverlap: true,
           itemStyle: { borderColor: "#fff", borderWidth: 3, borderRadius: 6 },
           label: { formatter: function (p) { return Math.round(p.percent) + " %"; }, color: FARBE.dunkel, fontWeight: 600 },
-          data: e.gwh.map(function (s) { return { name: s.sektor, value: s.gwh }; }),
+          data: e.map(function (s) { return { name: s[0], value: Math.round(s[1] / 1000) }; }),
         }],
       }, opt.klein ? "klein" : "");
       ziel.appendChild(el("p", "fuss", "Wärme umfasst Heizung, Warmwasser und Prozesswärme der Industrie. Quelle: " +
-        link(B.berichte["2025"].url, "Fortschrittsbericht 2025") + ". Die Verteilung je Sektor ist bei der Stadt angefragt."));
+        quelleStadt() + "."));
     },
   };
 
@@ -405,9 +410,8 @@
         ziel.appendChild(zeile);
       });
       ziel.appendChild(el("p", "fuss", Math.round(anteil * 100) + " % erreicht. Ziel laut " +
-        link(B.berichte["2025"].url, "Fortschrittsbericht 2025") + ": " + mwp(B.strom.pv_ziel_2035_dach_kwp, 0) + " auf Dächern und " +
-        mwp(B.strom.pv_ziel_2035_freiflaeche_kwp, 0) + " auf Freiflächen" +
-        (B.strom.pv_ziel_aus_diagramm ? " (aus einer Grafik abgelesen, Bestätigung angefragt)" : "") + "."));
+        quelleStadt("Reduktionsfahrplan") + ": " + mwp(S.fahrplan.ziele_2035.pv_dach_kwp, 0) + " auf Dächern und " +
+        mwp(S.fahrplan.ziele_2035.pv_freiflaeche_kwp, 0) + " auf Freiflächen."));
     },
   };
   MODULE.speicher = {
@@ -464,12 +468,14 @@
   MODULE.verkehr = {
     titel: "Verkehr in Zahlen",
     bau: function (ziel) {
-      var v = B.verkehr;
+      var v = B.verkehr, bus = B.busse;
       var raster = el("div", "kennzahlen");
       [["Zugelassene Pkw", zahl(v.pkw_bestand), "Stand " + v.pkw_bestand_stichtag],
        ["Fahrzeuge je 1.000 Einwohner", "~" + zahl(v.fahrzeuge_je_1000), "eine der höchsten Dichten in Deutschland"],
        ["Ziel E-Fahrzeuge 2035", zahl(v.e_fahrzeuge_ziel_2035), "laut Fortschrittsbericht"],
-       ["E-Busse", v.e_busse_2023 + " von " + v.busflotte, "im Jahr 2023, " + v.e_busse_geplant]].forEach(function (k) {
+       ["E-Busse Stadtbus", bus.sbi_e_busse + " von " + bus.sbi_linienbusse,
+         bus.sbi_e_busse_in_beschaffung + " weitere bestellt; mit Partnern " + bus.mit_partnern_e_busse + " von rund " + bus.mit_partnern_linienbusse_ca],
+       ["Fahrradstraßen", zahl(B.rad.fahrradstrassen_km) + " km", "im Stadtgebiet"]].forEach(function (k) {
         var d = el("div", "kennzahl");
         d.style.background = "#fff";
         d.appendChild(el("p", "k-label", k[0]));
@@ -479,7 +485,8 @@
       });
       ziel.appendChild(raster);
       ziel.appendChild(el("p", "fuss", "Quelle: " + link(B.berichte["2025"].url, "Fortschrittsbericht 2025") +
-        ". Rad- und Kfz-Zählstellen, Modal Split und Fahrgastzahlen sind bei der Stadt angefragt."));
+        "; Busse und Fahrradstraßen: " + B.berichte.auskunft_2026.titel + ", " + B.berichte.auskunft_2026.stand +
+        ". Ein aktueller Modal Split ist angekündigt, Fahrgastzahlen liegen bei der Stadt nicht vor."));
     },
   };
 
@@ -489,14 +496,13 @@
     bau: function (ziel, opt) {
       ziel.appendChild(el("p", "unterzeile", "Diese Themen kommen dazu, sobald Daten freigegeben sind."));
       var alle = {
-        emissionen: [["Treibhausgase als Zeitreihe", "nach Sektor und Energieträger, liegt bei der Stabsstelle Klima"],
-          ["Klimaneutrale Verwaltung 2030", "Bilanz der Stadtverwaltung"],
-          ["Städtische Gebäude", "Strom- und Wärmeverbrauch je Liegenschaft"]],
+        emissionen: [["Treibhausgase als Zeitreihe", "nach Sektor seit 2019, liegt vor, Darstellung folgt"],
+          ["Klimaneutrale Verwaltung 2030", "Bilanz der Stadtverwaltung, Freigabe steht aus"],
+          ["Städtische Gebäude", "Strom- und Wärmeverbrauch der Liegenschaften, Freigabe steht aus"]],
         mobilitaet: [["Radverkehr", "Zählstellen bzw. Stadtradeln-Kilometer"],
-          ["Kfz-Verkehr", "Zählstellen, Modal Split"],
-          ["Busse", "Fahrgastzahlen und E-Bus-Anteil pro Jahr"]],
-        energie: [["Wärme", "Wärmepumpen, Fernwärme-Ausbau, Wärmeplan"],
-          ["Strom", "Verbrauch und lokale Einspeisung pro Jahr"]],
+          ["Kfz-Verkehr", "Zählstellen, Modal Split (neuere Erhebung angekündigt)"]],
+        energie: [["Wärme", "Wärmepumpen, Fernwärme-Ausbau, Wärmeplan, Freigabe steht aus"],
+          ["Strom", "Verbrauch und lokale Einspeisung pro Jahr, liegt vor, Darstellung folgt"]],
       };
       var liste = el("ul", "luecken");
       (opt.thema ? alle[opt.thema] : [].concat(alle.emissionen, alle.energie, alle.mobilitaet)).forEach(function (p) {
@@ -542,7 +548,9 @@
         ["Ladesäulenregister der Bundesnetzagentur", D.laden.quelle],
         [B.berichte["2025"].titel, B.berichte["2025"].url],
         [B.berichte["2023"].titel, B.berichte["2023"].url],
-      ].map(function (q) { return "<li>" + link(q[1], q[0]) + "</li>"; }).join("");
+      ].map(function (q) { return "<li>" + link(q[1], q[0]) + "</li>"; }).join("") +
+        "<li>" + quelleStadt("Energie- und THG-Bilanz und Reduktionsfahrplan") + "</li>" +
+        "<li>" + B.berichte.auskunft_2026.titel + ", " + B.berichte.auskunft_2026.stand + "</li>";
       fuss.innerHTML = '<div class="huelle">' +
         "<h2>Quellen</h2><ul>" + quellen + "</ul>" +
         '<p class="hinweis-privat">Ein Prototyp aus der Bürgerschaft in Zusammenarbeit mit der Stabsstelle Klima, ' +

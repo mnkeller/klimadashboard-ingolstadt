@@ -1,0 +1,846 @@
+{
+ "_hinweis": "Erzeugt von scraper/stadt_einlesen.py aus Excel-Dateien der Stabsstelle Klima. Nicht von Hand ändern, sondern neu einlesen.",
+ "erzeugt_am": "2026-10-23",
+ "quelle": "Stabsstelle Klima der Stadt Ingolstadt",
+ "lizenz": "CC BY 4.0",
+ "lizenz_url": "https://creativecommons.org/licenses/by/4.0/deed.de",
+ "dateien": [
+  {
+   "name": "Energie- und THG-Bilanz bis 2035.xlsx",
+   "stand": "2026-09-22"
+  },
+  {
+   "name": "2025_Reduktionsfahrplan Ingolstadt.xlsx",
+   "stand": "2026-10-23"
+  }
+ ],
+ "thg": {
+  "methode": "BISKO",
+  "basisjahr": 2019,
+  "bilanzjahr": 2023,
+  "werte": [
+   {
+    "jahr": 2019,
+    "endenergie_mwh": {
+     "strom": 1126907,
+     "waerme": 3694832,
+     "verkehr": 766275,
+     "summe": 5588014
+    },
+    "thg_t": {
+     "strom": 539788,
+     "waerme": 857469,
+     "verkehr": 193259,
+     "summe": 1590516
+    },
+    "thg_industrie_t": 848384
+   },
+   {
+    "jahr": 2020,
+    "endenergie_mwh": {
+     "strom": 1025178,
+     "waerme": 3454112,
+     "verkehr": 690580,
+     "summe": 5169870
+    },
+    "thg_t": {
+     "strom": 445952,
+     "waerme": 799424,
+     "verkehr": 171153,
+     "summe": 1416529
+    },
+    "thg_industrie_t": 735319
+   },
+   {
+    "jahr": 2021,
+    "endenergie_mwh": {
+     "strom": 1010111,
+     "waerme": 3444813,
+     "verkehr": 690660,
+     "summe": 5145584
+    },
+    "thg_t": {
+     "strom": 481823,
+     "waerme": 786921,
+     "verkehr": 172591,
+     "summe": 1441335
+    },
+    "thg_industrie_t": 716485
+   },
+   {
+    "jahr": 2022,
+    "endenergie_mwh": {
+     "strom": 1015492,
+     "waerme": 3174858,
+     "verkehr": 696280,
+     "summe": 4886630
+    },
+    "thg_t": {
+     "strom": 510792,
+     "waerme": 723040,
+     "verkehr": 173925,
+     "summe": 1407758
+    },
+    "thg_industrie_t": 706819
+   },
+   {
+    "jahr": 2023,
+    "endenergie_mwh": {
+     "strom": 1027296,
+     "waerme": 2927279,
+     "verkehr": 712926,
+     "summe": 4667501
+    },
+    "thg_t": {
+     "strom": 461256,
+     "waerme": 672105,
+     "verkehr": 175069,
+     "summe": 1308430
+    },
+    "thg_industrie_t": 653589
+   }
+  ],
+  "pfad": [
+   {
+    "jahr": 2019,
+    "soll_t": 1590516,
+    "hochrechnung_t": null
+   },
+   {
+    "jahr": 2020,
+    "soll_t": 1501050,
+    "hochrechnung_t": null
+   },
+   {
+    "jahr": 2021,
+    "soll_t": 1411583,
+    "hochrechnung_t": null
+   },
+   {
+    "jahr": 2022,
+    "soll_t": 1322117,
+    "hochrechnung_t": null
+   },
+   {
+    "jahr": 2023,
+    "soll_t": 1232650,
+    "hochrechnung_t": null
+   },
+   {
+    "jahr": 2024,
+    "soll_t": 1143184,
+    "hochrechnung_t": 1239688
+   },
+   {
+    "jahr": 2025,
+    "soll_t": 1053717,
+    "hochrechnung_t": 1131257
+   },
+   {
+    "jahr": 2026,
+    "soll_t": 964250,
+    "hochrechnung_t": 1022144
+   },
+   {
+    "jahr": 2027,
+    "soll_t": 874784,
+    "hochrechnung_t": 912247
+   },
+   {
+    "jahr": 2028,
+    "soll_t": 785317,
+    "hochrechnung_t": 801422
+   },
+   {
+    "jahr": 2029,
+    "soll_t": 695851,
+    "hochrechnung_t": 689459
+   },
+   {
+    "jahr": 2030,
+    "soll_t": 606384,
+    "hochrechnung_t": 545804
+   },
+   {
+    "jahr": 2031,
+    "soll_t": 516918,
+    "hochrechnung_t": 482160
+   },
+   {
+    "jahr": 2032,
+    "soll_t": 427451,
+    "hochrechnung_t": 418840
+   },
+   {
+    "jahr": 2033,
+    "soll_t": 337985,
+    "hochrechnung_t": 355912
+   },
+   {
+    "jahr": 2034,
+    "soll_t": 248518,
+    "hochrechnung_t": 293453
+   },
+   {
+    "jahr": 2035,
+    "soll_t": 159052,
+    "hochrechnung_t": 231551
+   }
+  ],
+  "minderung_erreicht_t_pro_jahr": 70522,
+  "minderung_noetig_t_pro_jahr": 89466
+ },
+ "strom": {
+  "werte": [
+   {
+    "jahr": 2019,
+    "verbrauch_mwh": 1126907,
+    "sektoren_mwh": {
+     "haushalte": 154400,
+     "ghd": 232700,
+     "industrie": 624367,
+     "stadtverwaltung": 21900,
+     "oeffentlich": 47000,
+     "verkehr": 2691,
+     "sonstige": 43849
+    },
+    "ee_mwh": {
+     "wasser": 131506,
+     "biomasse": 2,
+     "pv": 50344
+    },
+    "ee_summe_mwh": 181852,
+    "ee_anteil_prozent": 16.1
+   },
+   {
+    "jahr": 2020,
+    "verbrauch_mwh": 1025178,
+    "sektoren_mwh": {
+     "haushalte": 158900,
+     "ghd": 208500,
+     "industrie": 543668,
+     "stadtverwaltung": 19800,
+     "oeffentlich": 43400,
+     "verkehr": 5936,
+     "sonstige": 44974
+    },
+    "ee_mwh": {
+     "wasser": 131506,
+     "biomasse": 234,
+     "pv": 53976
+    },
+    "ee_summe_mwh": 185715,
+    "ee_anteil_prozent": 18.1
+   },
+   {
+    "jahr": 2021,
+    "verbrauch_mwh": 1010111,
+    "sektoren_mwh": {
+     "haushalte": 160100,
+     "ghd": 210000,
+     "industrie": 528401,
+     "stadtverwaltung": 19800,
+     "oeffentlich": 42700,
+     "verkehr": 9431,
+     "sonstige": 39679
+    },
+    "ee_mwh": {
+     "wasser": 131505,
+     "biomasse": 306,
+     "pv": 58408
+    },
+    "ee_summe_mwh": 190219,
+    "ee_anteil_prozent": 18.8
+   },
+   {
+    "jahr": 2022,
+    "verbrauch_mwh": 1015492,
+    "sektoren_mwh": {
+     "haushalte": 137600,
+     "ghd": 213700,
+     "industrie": 532312,
+     "stadtverwaltung": 20300,
+     "oeffentlich": 42970,
+     "verkehr": 11849,
+     "sonstige": 56761
+    },
+    "ee_mwh": {
+     "wasser": 131511,
+     "biomasse": 208,
+     "pv": 69033
+    },
+    "ee_summe_mwh": 200752,
+    "ee_anteil_prozent": 19.8
+   },
+   {
+    "jahr": 2023,
+    "verbrauch_mwh": 1027296,
+    "sektoren_mwh": {
+     "haushalte": 113700,
+     "ghd": 208600,
+     "industrie": 550196,
+     "stadtverwaltung": 19000,
+     "oeffentlich": 45100,
+     "verkehr": 17545,
+     "sonstige": 73155
+    },
+    "ee_mwh": {
+     "wasser": 131508,
+     "biomasse": 175,
+     "pv": 75989
+    },
+    "ee_summe_mwh": 207672,
+    "ee_anteil_prozent": 20.2
+   }
+  ],
+  "hinweis": "Wasserkraft in der Direktvermarktung als langjähriges Mittel, PV-Eigenverbrauch hochgerechnet aus dem Marktstammdatenregister."
+ },
+ "fahrplan": {
+  "plan_ab": 2025,
+  "pv": [
+   {
+    "jahr": 2000,
+    "dach_kwp": 139,
+    "freiflaeche_kwp": null,
+    "art": "ist"
+   },
+   {
+    "jahr": 2001,
+    "dach_kwp": 275,
+    "freiflaeche_kwp": null,
+    "art": "ist"
+   },
+   {
+    "jahr": 2002,
+    "dach_kwp": 426,
+    "freiflaeche_kwp": null,
+    "art": "ist"
+   },
+   {
+    "jahr": 2003,
+    "dach_kwp": 621,
+    "freiflaeche_kwp": null,
+    "art": "ist"
+   },
+   {
+    "jahr": 2004,
+    "dach_kwp": 1625,
+    "freiflaeche_kwp": null,
+    "art": "ist"
+   },
+   {
+    "jahr": 2005,
+    "dach_kwp": 2948,
+    "freiflaeche_kwp": null,
+    "art": "ist"
+   },
+   {
+    "jahr": 2006,
+    "dach_kwp": 4026,
+    "freiflaeche_kwp": null,
+    "art": "ist"
+   },
+   {
+    "jahr": 2007,
+    "dach_kwp": 5882,
+    "freiflaeche_kwp": null,
+    "art": "ist"
+   },
+   {
+    "jahr": 2008,
+    "dach_kwp": 8319,
+    "freiflaeche_kwp": null,
+    "art": "ist"
+   },
+   {
+    "jahr": 2009,
+    "dach_kwp": 16683,
+    "freiflaeche_kwp": null,
+    "art": "ist"
+   },
+   {
+    "jahr": 2010,
+    "dach_kwp": 23402,
+    "freiflaeche_kwp": null,
+    "art": "ist"
+   },
+   {
+    "jahr": 2011,
+    "dach_kwp": 32360,
+    "freiflaeche_kwp": null,
+    "art": "ist"
+   },
+   {
+    "jahr": 2012,
+    "dach_kwp": 36300,
+    "freiflaeche_kwp": null,
+    "art": "ist"
+   },
+   {
+    "jahr": 2013,
+    "dach_kwp": 38446,
+    "freiflaeche_kwp": null,
+    "art": "ist"
+   },
+   {
+    "jahr": 2014,
+    "dach_kwp": 39270,
+    "freiflaeche_kwp": null,
+    "art": "ist"
+   },
+   {
+    "jahr": 2015,
+    "dach_kwp": 40244,
+    "freiflaeche_kwp": null,
+    "art": "ist"
+   },
+   {
+    "jahr": 2016,
+    "dach_kwp": 41095,
+    "freiflaeche_kwp": null,
+    "art": "ist"
+   },
+   {
+    "jahr": 2017,
+    "dach_kwp": 45801,
+    "freiflaeche_kwp": null,
+    "art": "ist"
+   },
+   {
+    "jahr": 2018,
+    "dach_kwp": 47300,
+    "freiflaeche_kwp": null,
+    "art": "ist"
+   },
+   {
+    "jahr": 2019,
+    "dach_kwp": 50344,
+    "freiflaeche_kwp": null,
+    "art": "ist"
+   },
+   {
+    "jahr": 2020,
+    "dach_kwp": 53976,
+    "freiflaeche_kwp": null,
+    "art": "ist"
+   },
+   {
+    "jahr": 2021,
+    "dach_kwp": 58408,
+    "freiflaeche_kwp": null,
+    "art": "ist"
+   },
+   {
+    "jahr": 2022,
+    "dach_kwp": 63374,
+    "freiflaeche_kwp": null,
+    "art": "ist"
+   },
+   {
+    "jahr": 2023,
+    "dach_kwp": 75989,
+    "freiflaeche_kwp": null,
+    "art": "ist"
+   },
+   {
+    "jahr": 2024,
+    "dach_kwp": 89189,
+    "freiflaeche_kwp": null,
+    "art": "ist"
+   },
+   {
+    "jahr": 2025,
+    "dach_kwp": 102799,
+    "freiflaeche_kwp": 23636,
+    "art": "pfad"
+   },
+   {
+    "jahr": 2026,
+    "dach_kwp": 118485,
+    "freiflaeche_kwp": 47273,
+    "art": "pfad"
+   },
+   {
+    "jahr": 2027,
+    "dach_kwp": 136566,
+    "freiflaeche_kwp": 70909,
+    "art": "pfad"
+   },
+   {
+    "jahr": 2028,
+    "dach_kwp": 157405,
+    "freiflaeche_kwp": 94545,
+    "art": "pfad"
+   },
+   {
+    "jahr": 2029,
+    "dach_kwp": 181425,
+    "freiflaeche_kwp": 118182,
+    "art": "pfad"
+   },
+   {
+    "jahr": 2030,
+    "dach_kwp": 209109,
+    "freiflaeche_kwp": 141818,
+    "art": "pfad"
+   },
+   {
+    "jahr": 2031,
+    "dach_kwp": 241018,
+    "freiflaeche_kwp": 165455,
+    "art": "pfad"
+   },
+   {
+    "jahr": 2032,
+    "dach_kwp": 277797,
+    "freiflaeche_kwp": 189091,
+    "art": "pfad"
+   },
+   {
+    "jahr": 2033,
+    "dach_kwp": 320188,
+    "freiflaeche_kwp": 212727,
+    "art": "pfad"
+   },
+   {
+    "jahr": 2034,
+    "dach_kwp": 369047,
+    "freiflaeche_kwp": 236364,
+    "art": "pfad"
+   },
+   {
+    "jahr": 2035,
+    "dach_kwp": 425362,
+    "freiflaeche_kwp": 260000,
+    "art": "pfad"
+   }
+  ],
+  "speicher": [
+   {
+    "jahr": 2005,
+    "kwh": 8,
+    "art": "ist"
+   },
+   {
+    "jahr": 2006,
+    "kwh": 8,
+    "art": "ist"
+   },
+   {
+    "jahr": 2007,
+    "kwh": 16,
+    "art": "ist"
+   },
+   {
+    "jahr": 2008,
+    "kwh": 16,
+    "art": "ist"
+   },
+   {
+    "jahr": 2009,
+    "kwh": 26,
+    "art": "ist"
+   },
+   {
+    "jahr": 2010,
+    "kwh": 26,
+    "art": "ist"
+   },
+   {
+    "jahr": 2011,
+    "kwh": 26,
+    "art": "ist"
+   },
+   {
+    "jahr": 2012,
+    "kwh": 87,
+    "art": "ist"
+   },
+   {
+    "jahr": 2013,
+    "kwh": 111,
+    "art": "ist"
+   },
+   {
+    "jahr": 2014,
+    "kwh": 126,
+    "art": "ist"
+   },
+   {
+    "jahr": 2015,
+    "kwh": 202,
+    "art": "ist"
+   },
+   {
+    "jahr": 2016,
+    "kwh": 395,
+    "art": "ist"
+   },
+   {
+    "jahr": 2017,
+    "kwh": 552,
+    "art": "ist"
+   },
+   {
+    "jahr": 2018,
+    "kwh": 933,
+    "art": "ist"
+   },
+   {
+    "jahr": 2019,
+    "kwh": 2119,
+    "art": "ist"
+   },
+   {
+    "jahr": 2020,
+    "kwh": 3690,
+    "art": "ist"
+   },
+   {
+    "jahr": 2021,
+    "kwh": 5916,
+    "art": "ist"
+   },
+   {
+    "jahr": 2022,
+    "kwh": 8385,
+    "art": "ist"
+   },
+   {
+    "jahr": 2023,
+    "kwh": 17468,
+    "art": "ist"
+   },
+   {
+    "jahr": 2024,
+    "kwh": 25346,
+    "art": "ist"
+   },
+   {
+    "jahr": 2025,
+    "kwh": 37470,
+    "art": "pfad"
+   },
+   {
+    "jahr": 2026,
+    "kwh": 53156,
+    "art": "pfad"
+   },
+   {
+    "jahr": 2027,
+    "kwh": 71237,
+    "art": "pfad"
+   },
+   {
+    "jahr": 2028,
+    "kwh": 92076,
+    "art": "pfad"
+   },
+   {
+    "jahr": 2029,
+    "kwh": 116096,
+    "art": "pfad"
+   },
+   {
+    "jahr": 2030,
+    "kwh": 143780,
+    "art": "pfad"
+   },
+   {
+    "jahr": 2031,
+    "kwh": 175689,
+    "art": "pfad"
+   },
+   {
+    "jahr": 2032,
+    "kwh": 212468,
+    "art": "pfad"
+   },
+   {
+    "jahr": 2033,
+    "kwh": 254859,
+    "art": "pfad"
+   },
+   {
+    "jahr": 2034,
+    "kwh": 303718,
+    "art": "pfad"
+   },
+   {
+    "jahr": 2035,
+    "kwh": 360033,
+    "art": "pfad"
+   }
+  ],
+  "fernwaerme": [
+   {
+    "jahr": 2009,
+    "km": 43.1,
+    "zubau_km": null,
+    "art": "ist"
+   },
+   {
+    "jahr": 2010,
+    "km": 46.4,
+    "zubau_km": 3.3,
+    "art": "ist"
+   },
+   {
+    "jahr": 2011,
+    "km": 59.7,
+    "zubau_km": 13.3,
+    "art": "ist"
+   },
+   {
+    "jahr": 2012,
+    "km": 65.9,
+    "zubau_km": 6.2,
+    "art": "ist"
+   },
+   {
+    "jahr": 2013,
+    "km": 68.9,
+    "zubau_km": 3.0,
+    "art": "ist"
+   },
+   {
+    "jahr": 2014,
+    "km": 73.4,
+    "zubau_km": 4.4,
+    "art": "ist"
+   },
+   {
+    "jahr": 2015,
+    "km": 76.9,
+    "zubau_km": 3.5,
+    "art": "ist"
+   },
+   {
+    "jahr": 2016,
+    "km": 78.5,
+    "zubau_km": 1.7,
+    "art": "ist"
+   },
+   {
+    "jahr": 2017,
+    "km": 81.2,
+    "zubau_km": 2.6,
+    "art": "ist"
+   },
+   {
+    "jahr": 2018,
+    "km": 81.9,
+    "zubau_km": 0.7,
+    "art": "ist"
+   },
+   {
+    "jahr": 2019,
+    "km": 82.6,
+    "zubau_km": 0.7,
+    "art": "ist"
+   },
+   {
+    "jahr": 2020,
+    "km": 83.6,
+    "zubau_km": 1.0,
+    "art": "ist"
+   },
+   {
+    "jahr": 2021,
+    "km": 85.0,
+    "zubau_km": 1.4,
+    "art": "ist"
+   },
+   {
+    "jahr": 2022,
+    "km": 85.4,
+    "zubau_km": 0.5,
+    "art": "ist"
+   },
+   {
+    "jahr": 2023,
+    "km": 87.0,
+    "zubau_km": 1.5,
+    "art": "ist"
+   },
+   {
+    "jahr": 2024,
+    "km": 92.4,
+    "zubau_km": 5.4,
+    "art": "ist"
+   },
+   {
+    "jahr": 2025,
+    "km": 99.4,
+    "zubau_km": 7.1,
+    "art": "pfad"
+   },
+   {
+    "jahr": 2026,
+    "km": 106.5,
+    "zubau_km": 7.1,
+    "art": "pfad"
+   },
+   {
+    "jahr": 2027,
+    "km": 113.5,
+    "zubau_km": 7.1,
+    "art": "pfad"
+   },
+   {
+    "jahr": 2028,
+    "km": 120.6,
+    "zubau_km": 7.1,
+    "art": "pfad"
+   },
+   {
+    "jahr": 2029,
+    "km": 127.6,
+    "zubau_km": 7.1,
+    "art": "pfad"
+   },
+   {
+    "jahr": 2030,
+    "km": 134.7,
+    "zubau_km": 7.1,
+    "art": "pfad"
+   },
+   {
+    "jahr": 2031,
+    "km": 141.8,
+    "zubau_km": 7.1,
+    "art": "pfad"
+   },
+   {
+    "jahr": 2032,
+    "km": 148.8,
+    "zubau_km": 7.1,
+    "art": "pfad"
+   },
+   {
+    "jahr": 2033,
+    "km": 155.9,
+    "zubau_km": 7.1,
+    "art": "pfad"
+   },
+   {
+    "jahr": 2034,
+    "km": 162.9,
+    "zubau_km": 7.1,
+    "art": "pfad"
+   },
+   {
+    "jahr": 2035,
+    "km": 170.0,
+    "zubau_km": 7.1,
+    "art": "pfad"
+   }
+  ],
+  "ziele_2035": {
+   "pv_dach_kwp": 425362,
+   "pv_freiflaeche_kwp": 260000,
+   "speicher_kwh": 360033,
+   "fernwaerme_km": 170.0
+  }
+ }
+}

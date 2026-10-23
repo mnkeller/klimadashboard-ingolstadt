@@ -1,5 +1,5 @@
 {
- "_hinweis": "Von Hand gepflegt. Werte aus den Fortschrittsberichten der Stabsstelle Klima, nur was dort als Zahl im Text steht. Werte aus Diagrammen sind mit \"aus_diagramm\": true markiert und sollten mit der Stabsstelle abgeglichen werden. Sobald die Stadt die BISKO-Bilanz als Tabelle liefert, ersetzt diese Datei die Einzelwerte.",
+ "_hinweis": "Von Hand gepflegt: Einzelwerte aus den Fortschrittsberichten und Auskünften der Stabsstelle Klima, die es nicht als Tabelle gibt. THG-Bilanz, Endenergie, EE-Anteil und die Ziele für PV, Speicher und Fernwärme kommen aus data/klima_stadt.json (scraper/stadt_einlesen.py).",
  "berichte": {
   "2025": {
    "titel": "Fortschrittsbericht 2025 (Bilanzjahr 2023)",
@@ -10,6 +10,10 @@
    "titel": "Fortschrittsbericht 2023 zum Integrierten Klimaschutzkonzept (Bilanzjahr 2021)",
    "stand": "07.06.2023",
    "url": "https://2035.de/wp-content/uploads/2023/10/2023-06-07_Fortschrittsbericht-IKSK-2023.pdf"
+  },
+  "auskunft_2026": {
+   "titel": "Auskunft der Stabsstelle Klima auf die Datenanfrage",
+   "stand": "Oktober 2026"
   }
  },
  "ziele": {
@@ -18,35 +22,7 @@
   "beschluss": "Stadtratsbeschluss Juni 2022",
   "bericht": "2025"
  },
- "thg": {
-  "methode": "BISKO, witterungsbereinigt",
-  "werte": [
-   {"jahr": 2019, "t_co2": 1653110, "berechnet": "1.476.925 t (2021) + 176.185 t Rückgang ggü. 2019", "bericht": "2023"},
-   {"jahr": 2021, "t_co2": 1476925, "bericht": "2023"}
-  ],
-  "reduktion_erforderlich_t_pro_jahr": 89500,
-  "reduktion_erreicht_t_pro_jahr": 70500,
-  "reduktion_bezug": "Durchschnitt seit 2019, Bilanzjahr 2023",
-  "anteil_industrie_2021": 48,
-  "bericht_pfad": "2025"
- },
- "endenergie": {
-  "jahr": 2023,
-  "gwh": [
-   {"sektor": "Wärme", "gwh": 2900},
-   {"sektor": "Strom", "gwh": 1000},
-   {"sektor": "Verkehr", "gwh": 700}
-  ],
-  "gesamt_2021_mwh": 4984248,
-  "bericht": "2025"
- },
  "strom": {
-  "ee_anteil_2023": 20,
-  "ee_anteil_2021": 3,
-  "pv_kwp_2023": 76000,
-  "pv_ziel_2035_dach_kwp": 425000,
-  "pv_ziel_2035_freiflaeche_kwp": 260000,
-  "pv_ziel_aus_diagramm": true,
   "strommix_bund_g_kwh_2023": 449,
   "bericht": "2025"
  },
@@ -54,7 +30,6 @@
   "waermepumpen_ziel_2035": 18500,
   "waermepumpen_zubau_noetig_pro_jahr": 1700,
   "waermepumpen_anstieg_2023_2024_prozent": 67,
-  "fernwaerme_netz_ziel_km": 170,
   "bericht": "2025"
  },
  "verkehr": {
@@ -62,9 +37,19 @@
   "pkw_bestand_stichtag": "01.01.2025",
   "fahrzeuge_je_1000": 700,
   "e_fahrzeuge_ziel_2035": 88000,
-  "busflotte": 139,
-  "e_busse_2023": 6,
-  "e_busse_geplant": "weitere 8 bis Ende 2025",
   "bericht": "2025"
+ },
+ "busse": {
+  "sbi_e_busse": 10,
+  "sbi_e_busse_in_beschaffung": 4,
+  "sbi_linienbusse": 98,
+  "mit_partnern_e_busse": 23,
+  "mit_partnern_linienbusse_ca": 140,
+  "hinweis": "SBI = Stadtbus Ingolstadt; mit Partnern = einschließlich beauftragter Busunternehmen",
+  "bericht": "auskunft_2026"
+ },
+ "rad": {
+  "fahrradstrassen_km": 8,
+  "bericht": "auskunft_2026"
  }
 }

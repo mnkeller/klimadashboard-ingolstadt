@@ -84,6 +84,8 @@ def pruefe_klima(d, alt):
     elif laden.get("reihe") and laden["reihe"][-1]["bestand"] != laden["ladepunkte"]:
         fehler.append("Ladepunkte: Reihe und Summe passen nicht zusammen")
 
+    fehler += pruefe_stadt(d.get("stadt") or {})
+
     if alt:
         def wert(daten, *pfad):
             try:
@@ -98,6 +100,37 @@ def pruefe_klima(d, alt):
             vorher, jetzt = wert(alt, *pfad), wert(d, *pfad)
             if vorher and jetzt is not None and jetzt < vorher * (1 - EINBRUCH_MAX):
                 fehler.append(f"{name}: Einbruch von {vorher} auf {jetzt}")
+    return fehler
+
+
+def pruefe_stadt(st):
+    """data/klima_stadt.json, eingebunden unter "stadt"."""
+    fehler = []
+    werte = st.get("thg", {}).get("werte", [])
+    if not werte:
+        return ["Stadt: keine THG-Bilanz"]
+    jahre = [w["jahr"] for w in werte]
+    if jahre != list(range(jahre[0], jahre[-1] + 1)):
+        fehler.append(f"Stadt: THG-Jahre nicht lückenlos: {jahre}")
+    for w in werte:
+        for art in ("thg_t", "endenergie_mwh"):
+            x = w[art]
+            teile = x["strom"] + x["waerme"] + x["verkehr"]
+            if abs(teile - x["summe"]) > 2:
+                fehler.append(f"Stadt {w['jahr']}: {art} Sektoren {teile} ≠ Summe {x['summe']}")
+        if not 0 < w["thg_industrie_t"] < w["thg_t"]["summe"]:
+            fehler.append(f"Stadt {w['jahr']}: Industrie-THG {w['thg_industrie_t']} unplausibel")
+    t = st["thg"]
+    erreicht = (werte[0]["thg_t"]["summe"] - werte[-1]["thg_t"]["summe"]) / (jahre[-1] - jahre[0])
+    if abs(erreicht - t.get("minderung_erreicht_t_pro_jahr", 0)) > 1:
+        fehler.append(f"Stadt: Minderung pro Jahr {t.get('minderung_erreicht_t_pro_jahr')} passt nicht zu {round(erreicht)}")
+    for s in st.get("strom", {}).get("werte", []):
+        if not 0 <= s["ee_anteil_prozent"] <= 100:
+            fehler.append(f"Stadt {s['jahr']}: EE-Anteil {s['ee_anteil_prozent']} %")
+    z = st.get("fahrplan", {}).get("ziele_2035", {})
+    for feld in ("pv_dach_kwp", "pv_freiflaeche_kwp", "speicher_kwh", "fernwaerme_km"):
+        if not z.get(feld):
+            fehler.append(f"Stadt: Ziel 2035 {feld} fehlt")
     return fehler
 
 
