@@ -12,6 +12,10 @@
   {
    "name": "2025_Reduktionsfahrplan Ingolstadt.xlsx",
    "stand": "2026-10-23"
+  },
+  {
+   "name": "Auswertung geförderte Wärmepumpen Ingolstadt bis 31.05.2025_korrigiert.xlsx",
+   "stand": "2025-06-26"
   }
  ],
  "thg": {
@@ -842,5 +846,459 @@
    "speicher_kwh": 360033,
    "fernwaerme_km": 170.0
   }
+ },
+ "gebaeude": {
+  "einheit": "Gebäude",
+  "heute": {
+   "sektoren": {
+    "Privates Wohnen": {
+     "gas": 13027,
+     "oel": 7743,
+     "fernwaerme": 702,
+     "biomasse": 1716,
+     "strom": 1098
+    },
+    "GHD": {
+     "gas": 896,
+     "oel": 329,
+     "fernwaerme": 177,
+     "biomasse": 49,
+     "strom": 20
+    },
+    "Industrie": {
+     "gas": 489,
+     "oel": 263,
+     "fernwaerme": 83,
+     "biomasse": 31,
+     "strom": 7
+    },
+    "Öffentlich": {
+     "gas": 174,
+     "oel": 72,
+     "fernwaerme": 118,
+     "biomasse": 8,
+     "strom": 17
+    }
+   },
+   "summe": {
+    "gas": 14586,
+    "oel": 8407,
+    "fernwaerme": 1080,
+    "biomasse": 1804,
+    "strom": 1142
+   }
+  },
+  "ziel_2035": {
+   "sektoren": {
+    "Privates Wohnen": {
+     "gas": 0,
+     "oel": 0,
+     "fernwaerme": 2265,
+     "biomasse": 4701,
+     "strom": 17317
+    },
+    "GHD": {
+     "gas": 44,
+     "oel": 0,
+     "fernwaerme": 648,
+     "biomasse": 138,
+     "strom": 639
+    },
+    "Industrie": {
+     "gas": 162,
+     "oel": 0,
+     "fernwaerme": 311,
+     "biomasse": 35,
+     "strom": 389
+    },
+    "Öffentlich": {
+     "gas": 1,
+     "oel": 0,
+     "fernwaerme": 224,
+     "biomasse": 10,
+     "strom": 131
+    }
+   },
+   "summe": {
+    "gas": 207,
+    "oel": 0,
+    "fernwaerme": 3448,
+    "biomasse": 4884,
+    "strom": 18476
+   }
+  }
+ },
+ "neubau": {
+  "einheit": "Prozent der Baufertigstellungen ohne Passivhaus",
+  "ingolstadt": [
+   {
+    "jahr": 2011,
+    "gas": 58.5,
+    "waermepumpe": 8.6,
+    "fernwaerme": 11.5,
+    "stromdirekt": 0.4,
+    "biomasse": 4.6,
+    "solarthermie": 14.6,
+    "oel": 1.2,
+    "sonstige": 0.6
+   },
+   {
+    "jahr": 2012,
+    "gas": 48.7,
+    "waermepumpe": 9.6,
+    "fernwaerme": 25.0,
+    "stromdirekt": 0.1,
+    "biomasse": 14.4,
+    "solarthermie": 0.6,
+    "oel": 1.5,
+    "sonstige": 0.1
+   },
+   {
+    "jahr": 2013,
+    "gas": 53.1,
+    "waermepumpe": 11.2,
+    "fernwaerme": 22.7,
+    "stromdirekt": 0.3,
+    "biomasse": 11.5,
+    "solarthermie": 0.1,
+    "oel": 1.1,
+    "sonstige": 0.0
+   },
+   {
+    "jahr": 2014,
+    "gas": 40.6,
+    "waermepumpe": 8.2,
+    "fernwaerme": 39.9,
+    "stromdirekt": 0.0,
+    "biomasse": 10.4,
+    "solarthermie": 0.5,
+    "oel": 0.5,
+    "sonstige": 0.0
+   },
+   {
+    "jahr": 2015,
+    "gas": 29.9,
+    "waermepumpe": 9.2,
+    "fernwaerme": 48.2,
+    "stromdirekt": 7.5,
+    "biomasse": 4.8,
+    "solarthermie": 0.2,
+    "oel": 0.3,
+    "sonstige": 0.0
+   },
+   {
+    "jahr": 2016,
+    "gas": 35.1,
+    "waermepumpe": 6.9,
+    "fernwaerme": 42.2,
+    "stromdirekt": 4.4,
+    "biomasse": 5.0,
+    "solarthermie": 6.2,
+    "oel": 0.2,
+    "sonstige": 0.2
+   },
+   {
+    "jahr": 2017,
+    "gas": 49.2,
+    "waermepumpe": 10.9,
+    "fernwaerme": 25.8,
+    "stromdirekt": 0.1,
+    "biomasse": 13.5,
+    "solarthermie": 0.0,
+    "oel": 0.4,
+    "sonstige": 0.0
+   },
+   {
+    "jahr": 2018,
+    "gas": 48.5,
+    "waermepumpe": 18.7,
+    "fernwaerme": 16.8,
+    "stromdirekt": 1.2,
+    "biomasse": 14.6,
+    "solarthermie": 0.2,
+    "oel": 0.0,
+    "sonstige": 0.0
+   },
+   {
+    "jahr": 2019,
+    "gas": 25.8,
+    "waermepumpe": 20.4,
+    "fernwaerme": 38.0,
+    "stromdirekt": 0.1,
+    "biomasse": 14.9,
+    "solarthermie": 0.6,
+    "oel": 0.2,
+    "sonstige": 0.0
+   },
+   {
+    "jahr": 2020,
+    "gas": 47.4,
+    "waermepumpe": 29.3,
+    "fernwaerme": 12.9,
+    "stromdirekt": 0.0,
+    "biomasse": 9.7,
+    "solarthermie": 0.5,
+    "oel": 0.2,
+    "sonstige": 0.0
+   },
+   {
+    "jahr": 2021,
+    "gas": 29.0,
+    "waermepumpe": 33.5,
+    "fernwaerme": 28.0,
+    "stromdirekt": 0.0,
+    "biomasse": 8.4,
+    "solarthermie": 0.3,
+    "oel": 0.6,
+    "sonstige": 0.3
+   },
+   {
+    "jahr": 2022,
+    "gas": 24.9,
+    "waermepumpe": 30.7,
+    "fernwaerme": 27.0,
+    "stromdirekt": 0.0,
+    "biomasse": 13.1,
+    "solarthermie": 0.1,
+    "oel": 0.0,
+    "sonstige": 4.2
+   },
+   {
+    "jahr": 2023,
+    "gas": 16.0,
+    "waermepumpe": 39.1,
+    "fernwaerme": 26.6,
+    "stromdirekt": 0.5,
+    "biomasse": 17.8,
+    "solarthermie": 0.0,
+    "oel": 0.0,
+    "sonstige": 0.0
+   },
+   {
+    "jahr": 2024,
+    "gas": 7.7,
+    "waermepumpe": 32.2,
+    "fernwaerme": 52.2,
+    "stromdirekt": 2.5,
+    "biomasse": 5.3,
+    "solarthermie": 0.1,
+    "oel": 0.0,
+    "sonstige": 0.0
+   }
+  ],
+  "bund": [
+   {
+    "jahr": 2015,
+    "gas": 50.3,
+    "waermepumpe": 20.7,
+    "fernwaerme": 20.8,
+    "stromdirekt": 0.7,
+    "biomasse": 5.3,
+    "solarthermie": 0.5,
+    "oel": 0.7,
+    "sonstige": 1.0
+   },
+   {
+    "jahr": 2016,
+    "gas": 44.2,
+    "waermepumpe": 23.3,
+    "fernwaerme": 24.0,
+    "stromdirekt": 0.9,
+    "biomasse": 5.3,
+    "solarthermie": 0.5,
+    "oel": 0.7,
+    "sonstige": 1.1
+   },
+   {
+    "jahr": 2017,
+    "gas": 39.3,
+    "waermepumpe": 27.2,
+    "fernwaerme": 25.2,
+    "stromdirekt": 0.7,
+    "biomasse": 5.5,
+    "solarthermie": 0.4,
+    "oel": 0.6,
+    "sonstige": 1.2
+   },
+   {
+    "jahr": 2018,
+    "gas": 38.6,
+    "waermepumpe": 28.8,
+    "fernwaerme": 25.2,
+    "stromdirekt": 1.1,
+    "biomasse": 4.4,
+    "solarthermie": 0.6,
+    "oel": 0.5,
+    "sonstige": 0.8
+   },
+   {
+    "jahr": 2019,
+    "gas": 36.7,
+    "waermepumpe": 29.8,
+    "fernwaerme": 26.8,
+    "stromdirekt": 0.9,
+    "biomasse": 4.2,
+    "solarthermie": 0.4,
+    "oel": 0.5,
+    "sonstige": 0.8
+   },
+   {
+    "jahr": 2020,
+    "gas": 33.2,
+    "waermepumpe": 35.5,
+    "fernwaerme": 24.4,
+    "stromdirekt": 1.3,
+    "biomasse": 4.1,
+    "solarthermie": 0.5,
+    "oel": 0.3,
+    "sonstige": 0.8
+   },
+   {
+    "jahr": 2021,
+    "gas": 26.2,
+    "waermepumpe": 43.6,
+    "fernwaerme": 22.7,
+    "stromdirekt": 1.4,
+    "biomasse": 4.5,
+    "solarthermie": 0.5,
+    "oel": 0.3,
+    "sonstige": 0.8
+   },
+   {
+    "jahr": 2022,
+    "gas": 17.4,
+    "waermepumpe": 50.7,
+    "fernwaerme": 23.7,
+    "stromdirekt": 1.6,
+    "biomasse": 4.9,
+    "solarthermie": 0.5,
+    "oel": 0.2,
+    "sonstige": 1.0
+   },
+   {
+    "jahr": 2023,
+    "gas": 10.3,
+    "waermepumpe": 55.9,
+    "fernwaerme": 26.6,
+    "stromdirekt": 1.7,
+    "biomasse": 4.0,
+    "solarthermie": 0.4,
+    "oel": 0.1,
+    "sonstige": 1.1
+   },
+   {
+    "jahr": 2024,
+    "gas": 5.2,
+    "waermepumpe": 64.6,
+    "fernwaerme": 24.2,
+    "stromdirekt": 2.1,
+    "biomasse": 2.5,
+    "solarthermie": 0.5,
+    "oel": 0.1,
+    "sonstige": 0.9
+   }
+  ]
+ },
+ "waermepumpen": {
+  "werte": [
+   {
+    "jahr": 2007,
+    "anzahl": 0,
+    "bis": null
+   },
+   {
+    "jahr": 2008,
+    "anzahl": 9,
+    "bis": null
+   },
+   {
+    "jahr": 2009,
+    "anzahl": 6,
+    "bis": null
+   },
+   {
+    "jahr": 2010,
+    "anzahl": 5,
+    "bis": null
+   },
+   {
+    "jahr": 2011,
+    "anzahl": 1,
+    "bis": null
+   },
+   {
+    "jahr": 2012,
+    "anzahl": 0,
+    "bis": null
+   },
+   {
+    "jahr": 2013,
+    "anzahl": 1,
+    "bis": null
+   },
+   {
+    "jahr": 2014,
+    "anzahl": 0,
+    "bis": null
+   },
+   {
+    "jahr": 2015,
+    "anzahl": 0,
+    "bis": null
+   },
+   {
+    "jahr": 2016,
+    "anzahl": 1,
+    "bis": null
+   },
+   {
+    "jahr": 2017,
+    "anzahl": 4,
+    "bis": null
+   },
+   {
+    "jahr": 2018,
+    "anzahl": 8,
+    "bis": null
+   },
+   {
+    "jahr": 2019,
+    "anzahl": 9,
+    "bis": null
+   },
+   {
+    "jahr": 2020,
+    "anzahl": 2,
+    "bis": null
+   },
+   {
+    "jahr": 2021,
+    "anzahl": 14,
+    "bis": null
+   },
+   {
+    "jahr": 2022,
+    "anzahl": 25,
+    "bis": null
+   },
+   {
+    "jahr": 2023,
+    "anzahl": 23,
+    "bis": null
+   },
+   {
+    "jahr": 2024,
+    "anzahl": 42,
+    "bis": null
+   },
+   {
+    "jahr": 2025,
+    "anzahl": 8,
+    "bis": "bis 31.05.2025"
+   }
+  ],
+  "plz": "85049",
+  "stand": "16.06.2025",
+  "programme": "MAP, MAP20, BEG EM (BAFA)"
  }
 }

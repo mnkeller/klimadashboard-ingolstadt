@@ -558,21 +558,217 @@
     },
   };
 
+  /* ================================================================
+     Waerme (Daten der Stabsstelle Klima, CC BY 4.0)
+     ================================================================ */
+  var HEIZ = [
+    { feld: "gas", name: "Gas", farbe: FARBE.orange },
+    { feld: "oel", name: "Öl", farbe: FARBE.dunkel },
+    { feld: "fernwaerme", name: "Fernwärme", farbe: FARBE.blau },
+    { feld: "biomasse", name: "Biomasse", farbe: FARBE.gelb },
+    { feld: "strom", name: "Strom", farbe: FARBE.lila },
+  ];
+
+  MODULE.fernwaerme = {
+    weiss: true,
+    titel: "Fernwärmenetz",
+    bau: function (ziel, opt) {
+      var f = S.fahrplan.fernwaerme.filter(function (z) { return z.jahr >= 2009; });
+      var pfad = S.fahrplan.plan_ab;
+      var letztIst = f.filter(function (z) { return z.art === "ist"; }).pop();
+      ziel.appendChild(el("p", "unterzeile", "Länge der Fernwärmetrasse in Kilometern. Ab " + pfad + " zeigt das Diagramm den Ausbaupfad der Stadt."));
+      diagramm(ziel, {
+        grid: raster({ top: 16 }),
+        tooltip: { trigger: "axis", axisPointer: { type: "shadow" }, formatter: function (p) {
+          var z = f[p[0].dataIndex];
+          return "<strong>" + z.jahr + (z.art === "pfad" ? " (Pfad)" : "") + "</strong><br>" + zahl(z.km, 1) + " km" +
+            (z.zubau_km ? "<br>+" + zahl(z.zubau_km, 1) + " km im Jahr" : "");
+        } },
+        xAxis: { type: "category", data: f.map(function (z) { return z.jahr; }) },
+        yAxis: { type: "value", axisLabel: { formatter: function (v) { return zahl(v); } } },
+        series: [{
+          type: "bar", color: FARBE.blau,
+          data: f.map(function (z) {
+            return { value: z.km, itemStyle: z.art === "pfad" ? { decal: SCHRAFFUR, opacity: .75 } : {} };
+          }),
+        }],
+      }, opt.klein ? "klein" : "");
+      ziel.appendChild(el("p", "fuss", zahl(letztIst.km, 1) + " km im Jahr " + letztIst.jahr + ", Ziel " +
+        zahl(S.fahrplan.ziele_2035.fernwaerme_km) + " km im Jahr 2035, also rund " +
+        zahl((S.fahrplan.ziele_2035.fernwaerme_km - letztIst.km) / (2035 - letztIst.jahr), 1) +
+        " km mehr pro Jahr. Schraffiert: Pfad, keine gemessenen Werte. Quelle: " + quelleStadt("Reduktionsfahrplan") + "."));
+    },
+  };
+
+  MODULE.heizungsarten = {
+    weiss: true,
+    titel: "Womit Gebäude heizen",
+    bau: function (ziel, opt) {
+      var g = S.gebaeude;
+      var spalten = [["Heute", g.heute.summe], ["Szenario 2035", g.ziel_2035.summe]];
+      ziel.appendChild(el("p", "unterzeile", "Anzahl der Gebäude nach Heizungsart, heute und im Wärmenetzausbauplan der Stadt für 2035."));
+      diagramm(ziel, {
+        grid: raster({ top: 40, left: 8 }),
+        legend: { top: 0, left: 0 },
+        tooltip: { trigger: "axis", axisPointer: { type: "shadow" }, valueFormatter: function (v) { return zahl(v) + " Gebäude"; } },
+        xAxis: { type: "value", axisLabel: { formatter: function (v) { return zahl(v); } } },
+        yAxis: { type: "category", inverse: true, data: spalten.map(function (s) { return s[0]; }) },
+        series: HEIZ.map(function (h) {
+          return { type: "bar", stack: "heiz", name: h.name, color: h.farbe, barMaxWidth: 56,
+            data: spalten.map(function (s) { return s[1][h.feld]; }) };
+        }),
+      }, opt.klein ? "klein" : "");
+      var ges = HEIZ.reduce(function (s, h) { return s + g.heute.summe[h.feld]; }, 0);
+      ziel.appendChild(el("p", "fuss", "Heute heizen " + Math.round((g.heute.summe.gas + g.heute.summe.oel) / ges * 100) +
+        " % der " + zahl(ges) + " Gebäude mit Gas oder Öl. Die Spalte 2035 ist ein Szenario mit Wärmenetzausbau, keine Prognose. " +
+        "Quelle: " + quelleStadt("Reduktionsfahrplan, Gebäudeübersicht") + "."));
+    },
+  };
+
+  var NEUBAU = [
+    { feld: "waermepumpe", name: "Wärmepumpe", farbe: FARBE.lila },
+    { feld: "fernwaerme", name: "Fernwärme", farbe: FARBE.blau },
+    { feld: "gas", name: "Gas", farbe: FARBE.orange },
+    { feld: "biomasse", name: "Biomasse", farbe: FARBE.gelb },
+    { feld: "stromdirekt", name: "Stromdirektheizung", farbe: FARBE.leise },
+    { feld: "solarthermie", name: "Solarthermie", farbe: FARBE.gruen },
+    { feld: "oel", name: "Öl", farbe: FARBE.dunkel },
+    { feld: "sonstige", name: "Sonstige", farbe: "#9a9ac8" },
+  ];
+  MODULE.neubau = {
+    weiss: true,
+    titel: "Heizung im Neubau",
+    bau: function (ziel, opt) {
+      ziel.appendChild(el("p", "unterzeile", "Anteil der Energieträger bei fertiggestellten Neubauten, in Prozent."));
+      var chart;
+      function option(wer) {
+        var reihe = S.neubau[wer];
+        return {
+          grid: raster({ top: window.innerWidth < 600 ? 110 : 74 }),
+          legend: { top: 0, left: 0 },
+          tooltip: { trigger: "axis", axisPointer: { type: "shadow" }, valueFormatter: function (v) { return zahl(v, 1) + " %"; } },
+          xAxis: { type: "category", data: reihe.map(function (z) { return z.jahr; }) },
+          yAxis: { type: "value", max: 100, axisLabel: { formatter: "{value} %" } },
+          series: NEUBAU.map(function (n) {
+            return { type: "bar", stack: "nb", name: n.name, color: n.farbe, data: reihe.map(function (z) { return z[n.feld]; }) };
+          }),
+        };
+      }
+      umschalter(ziel, [{ id: "ingolstadt", text: "Ingolstadt" }, { id: "bund", text: "Deutschland" }], "ingolstadt", function (wer) {
+        chart.setOption(option(wer), true);
+      });
+      chart = diagramm(ziel, option("ingolstadt"), opt.klein ? "klein" : "");
+      var i = S.neubau.ingolstadt[S.neubau.ingolstadt.length - 1];
+      var b = S.neubau.bund[S.neubau.bund.length - 1];
+      ziel.appendChild(el("p", "fuss", i.jahr + " bekamen " + zahl(i.waermepumpe + i.fernwaerme) + " % der neuen Gebäude in Ingolstadt eine Wärmepumpe oder Fernwärme" +
+        " (Deutschland: " + zahl(b.waermepumpe + b.fernwaerme) + " %). Auswertung der Baufertigstellungen ohne Passivhäuser. " +
+        "Quelle: " + quelleStadt("Reduktionsfahrplan") + "."));
+    },
+  };
+
+  MODULE.waermepumpen = {
+    weiss: true,
+    titel: "Geförderte Wärmepumpen",
+    bau: function (ziel, opt) {
+      var wp = S.waermepumpen;
+      var reihe = wp.werte;
+      ziel.appendChild(el("p", "unterzeile", "Wärmepumpen, für die der Bund eine Förderung ausgezahlt hat, nach Jahr der Auszahlung."));
+      diagramm(ziel, {
+        grid: raster({ top: 16 }),
+        tooltip: { trigger: "axis", axisPointer: { type: "shadow" }, formatter: function (p) {
+          var z = reihe[p[0].dataIndex];
+          return "<strong>" + z.jahr + (z.bis ? " (" + z.bis + ")" : "") + "</strong><br>" + zahl(z.anzahl) + " geförderte Wärmepumpen";
+        } },
+        xAxis: { type: "category", data: reihe.map(function (z) { return z.jahr; }) },
+        yAxis: { type: "value", minInterval: 1 },
+        series: [{ type: "bar", color: FARBE.lila,
+          data: reihe.map(function (z) { return { value: z.anzahl, itemStyle: { decal: z.bis ? SCHRAFFUR : null } }; }) }],
+      }, opt.klein ? "klein" : "");
+      var summe = reihe.reduce(function (s, z) { return s + z.anzahl; }, 0);
+      ziel.appendChild(el("p", "fuss", "Zusammen " + zahl(summe) + " Förderfälle seit " + reihe[0].jahr + ". Das ist eine Untergrenze, kein Bestand: " +
+        "Nicht geförderte Anlagen fehlen, und die Auswertung der BAFA nennt in der Überschrift nur die Postleitzahl " + wp.plz +
+        ". Schraffiert: laufendes Jahr (" + reihe[reihe.length - 1].bis + "). Stand der Auswertung " + wp.stand + ". Quelle: " +
+        quelleStadt("Auswertung der BAFA-Förderungen") + "."));
+    },
+  };
+
+  /* ---------- Karte: Eignungsgebiete der Waermeplanung ---------- */
+  var EIGNUNG_FARBEN = {
+    waermenetz: "#e65c2a", waermenetz_gering: "#f0be50", gas_waermepumpe: "#974cda", waermepumpe: "#4c4dee",
+  };
+  var EIGNUNG_REIHE = ["waermepumpe", "gas_waermepumpe", "waermenetz_gering", "waermenetz"]; // spaeter = obenauf
+  function ladeEignung(fertig) {
+    if (window.KD_EIGNUNG) return fertig();
+    var s = document.createElement("script");
+    s.src = "data/eignungsgebiete.js";
+    s.onload = fertig;
+    s.onerror = function () { fertig(); };
+    document.head.appendChild(s);
+  }
+  MODULE.eignungsgebiete = {
+    weiss: true,
+    titel: "Wo Wärmenetze und Wärmepumpen passen",
+    bau: function (ziel, opt) {
+      ziel.appendChild(el("p", "unterzeile", "Arbeitsstand der Stadt vom Januar 2025: Welche Gebiete sich für ein Wärmenetz eignen und wo Wärmepumpen oder Gas zu prüfen sind."));
+      var platz = el("div", "karte-platz");
+      ziel.appendChild(platz);
+      ladeEignung(function () {
+        var geo = window.KD_EIGNUNG;
+        if (!geo) { platz.textContent = "Die Karte konnte nicht geladen werden."; return; }
+        var infos = [];
+        var features = geo.features.map(function (f, i) {
+          infos.push(f.properties);
+          return { type: "Feature", properties: { id: "g" + i, rang: EIGNUNG_REIHE.indexOf(f.properties.kategorie) }, geometry: f.geometry };
+        });
+        var sortiert = features.map(function (f, i) { return i; }).sort(function (a, b) { return features[a].properties.rang - features[b].properties.rang; });
+        echarts.registerMap("eignung", { type: "FeatureCollection", features: sortiert.map(function (i) { return features[i]; }) });
+
+        var leiste = el("ul", "legende");
+        EIGNUNG_REIHE.slice().reverse().forEach(function (k) {
+          var li = el("li", "", '<span class="punkt" style="background:' + EIGNUNG_FARBEN[k] + '"></span>' + geo.kategorien[k].name +
+            " (" + geo.kategorien[k].anzahl + ")");
+          leiste.appendChild(li);
+        });
+        platz.appendChild(leiste);
+        diagramm(platz, {
+          tooltip: { trigger: "item", formatter: function (p) {
+            var i = infos[Number(String(p.name).slice(1))];
+            if (!i) return "";
+            return "<strong>" + (i.name || geo.kategorien[i.kategorie].name) + "</strong>" + (i.name ? "<br>" + geo.kategorien[i.kategorie].name : "");
+          } },
+          series: [{
+            type: "map", map: "eignung", nameProperty: "id", aspectScale: 0.66, roam: false, top: 8, bottom: 8, left: 8, right: 8,
+            itemStyle: { borderColor: "#fff", borderWidth: .6 },
+            emphasis: { label: { show: false }, itemStyle: { borderColor: FARBE.dunkel, borderWidth: 1.5 } },
+            select: { disabled: true },
+            data: infos.map(function (i, n) {
+              return { name: "g" + n, itemStyle: { areaColor: EIGNUNG_FARBEN[i.kategorie], opacity: i.kategorie.indexOf("waermenetz") === 0 ? .9 : .55 } };
+            }),
+          }],
+        }, "karte-hoch");
+        platz.appendChild(el("p", "fuss", "Das sind Prüfgebiete aus der laufenden Planung, kein beschlossener Wärmeplan und keine Zusage für einzelne Straßen. " +
+          "Stand " + datum(geo.stand) + ". Quelle: " + quelleStadt("Eignungsgebiete") + "."));
+      });
+    },
+  };
+
   /* ---------- Datenluecken ---------- */
   MODULE.luecken = {
     titel: "Was noch fehlt",
     bau: function (ziel, opt) {
       ziel.appendChild(el("p", "unterzeile", "Diese Themen kommen dazu, sobald Daten vorliegen oder freigegeben sind."));
       var alle = {
-        emissionen: [["Klimaneutrale Verwaltung 2030", "Bilanz der Stadtverwaltung, Freigabe steht aus"],
-          ["Städtische Gebäude", "Strom- und Wärmeverbrauch der Liegenschaften, Freigabe steht aus"]],
+        emissionen: [["Klimaneutrale Verwaltung 2030", "Bilanz der Stadtverwaltung, Daten liegen vor, Darstellung folgt"],
+          ["Städtische Gebäude", "Strom- und Wärmeverbrauch der Liegenschaften, Daten liegen vor, Darstellung folgt"]],
+        waerme: [["Beschlossener Wärmeplan", "liegt noch nicht vor, die Karte zeigt den Arbeitsstand vom Januar 2025"],
+          ["Wärmepumpen im Bestand", "bekannt sind nur geförderte Anlagen, keine Gesamtzahl"]],
         mobilitaet: [["Radverkehr", "Zählstellen bzw. Stadtradeln-Kilometer"],
           ["Kfz-Verkehr", "Zählstellen, Modal Split (neuere Erhebung angekündigt)"]],
-        energie: [["Wärme", "Wärmepumpen und Eignungsgebiete (Freigabe steht aus), Fernwärme-Ausbau (liegt vor, Seite folgt), kommunale Wärmeplanung"],
+        energie: [
           ["Strom nach 2023", "die Bilanz der Stadt reicht bis 2023, neuere Werte folgen mit der nächsten Bilanz"]],
       };
       var liste = el("ul", "luecken");
-      (opt.thema ? alle[opt.thema] : [].concat(alle.emissionen, alle.energie, alle.mobilitaet)).forEach(function (p) {
+      (opt.thema ? alle[opt.thema] : [].concat(alle.emissionen, alle.energie, alle.waerme, alle.mobilitaet)).forEach(function (p) {
         liste.appendChild(el("li", "", "<strong>" + p[0] + "</strong> – " + p[1]));
       });
       ziel.appendChild(liste);
@@ -584,7 +780,7 @@
      ================================================================ */
   var SEITEN = [
     ["index.html", "Übersicht"], ["klima.html", "Wetter & Klima"], ["emissionen.html", "Emissionen"],
-    ["erneuerbare.html", "Erneuerbare"], ["mobilitaet.html", "Mobilität"],
+    ["erneuerbare.html", "Erneuerbare"], ["waerme.html", "Wärme"], ["mobilitaet.html", "Mobilität"],
   ];
   function rahmen() {
     var hier = (location.pathname.split("/").pop() || "index.html");
@@ -616,7 +812,7 @@
         [B.berichte["2025"].titel, B.berichte["2025"].url],
         [B.berichte["2023"].titel, B.berichte["2023"].url],
       ].map(function (q) { return "<li>" + link(q[1], q[0]) + "</li>"; }).join("") +
-        "<li>" + quelleStadt("Energie- und THG-Bilanz und Reduktionsfahrplan") + "</li>" +
+        "<li>" + quelleStadt("Energie- und THG-Bilanz, Reduktionsfahrplan, BAFA-Auswertung und Eignungsgebiete") + "</li>" +
         "<li>" + B.berichte.auskunft_2026.titel + ", " + B.berichte.auskunft_2026.stand + "</li>";
       fuss.innerHTML = '<div class="huelle">' +
         "<h2>Quellen</h2><ul>" + quellen + "</ul>" +

@@ -131,6 +131,28 @@ def pruefe_stadt(st):
     for feld in ("pv_dach_kwp", "pv_freiflaeche_kwp", "speicher_kwh", "fernwaerme_km"):
         if not z.get(feld):
             fehler.append(f"Stadt: Ziel 2035 {feld} fehlt")
+    g = st.get("gebaeude")
+    if g:
+        for zeit in ("heute", "ziel_2035"):
+            teile = sum(sum(v.values()) for v in g[zeit]["sektoren"].values())
+            if abs(teile - sum(g[zeit]["summe"].values())) > 1:
+                fehler.append(f"Stadt: Gebäude {zeit} Summe passt nicht")
+        if not 10000 < sum(g["heute"]["summe"].values()) < 100000:
+            fehler.append("Stadt: Gebäudezahl unplausibel")
+    nb = st.get("neubau")
+    if nb:
+        for wer in ("ingolstadt", "bund"):
+            for z in nb[wer]:
+                summe = sum(v for k, v in z.items() if k != "jahr")
+                if abs(summe - 100) > 2:
+                    fehler.append(f"Stadt: Neubau {wer} {z['jahr']} summiert sich auf {summe:.1f} %")
+    wp = st.get("waermepumpen")
+    if wp:
+        jahre = [w["jahr"] for w in wp["werte"]]
+        if jahre != list(range(jahre[0], jahre[-1] + 1)):
+            fehler.append(f"Stadt: Wärmepumpen-Jahre nicht lückenlos: {jahre}")
+        if any(w["anzahl"] < 0 for w in wp["werte"]):
+            fehler.append("Stadt: negative Wärmepumpen-Zahl")
     return fehler
 
 

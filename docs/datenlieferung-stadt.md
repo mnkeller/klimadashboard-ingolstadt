@@ -7,7 +7,10 @@ Dokument stehen nur Summen und Kennzahlen, keine Rohdaten.
 
 **Lizenz:** Für Teil A (Bilanz, Reduktionspfad, Ziele) ist CC BY 4.0
 freigegeben. Für die Dateien aus Teil B (Verwaltung, Liegenschaften,
-Wärmepumpen, Eignungsgebiete) fehlt noch eine ausdrückliche Freigabe.
+Wärmepumpen, Eignungsgebiete) liegt seit dem 23.10.2026 ebenfalls die
+Freigabe unter CC BY 4.0 vor (mündlich im Gespräch bestätigt, noch nicht schriftlich in
+`input/`). Umgesetzt sind bisher Wärmepumpen und Eignungsgebiete auf `waerme.html`;
+Verwaltung und Liegenschaften folgen.
 
 **Ist und Prognose:** In allen Bilanz-Tabellen sind nur **2019 bis 2023**
 gemessene Werte. Ab 2024 stehen dort Hochrechnungen oder Zielpfade, die

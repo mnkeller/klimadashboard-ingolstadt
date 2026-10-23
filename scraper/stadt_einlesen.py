@@ -19,8 +19,10 @@ die Stadt CC BY 4.0 freigegeben hat:
 - "…Reduktionsfahrplan….xlsx": Pfade fuer PV, Speicher und Fernwaerme bis
   2035.
 
-Teil B (Verwaltung, Liegenschaften, Waermepumpen, Eignungsgebiete) folgt
-erst nach Freigabe.
+Dazu kommen aus Teil B, nach Freigabe ebenfalls CC BY 4.0, die geforderten
+Waermepumpen (nur Jahressummen) und die Eignungsgebiete, die als bereinigte
+Karte nach data/eignungsgebiete.json gehen (nur Kategorie und Name). Verwaltung
+und Liegenschaften folgen.
 
 Reiter werden ueber den Namen, Spalten ueber ihre Ueberschrift gefunden,
 nicht ueber feste Zellen. Fehlt eine Ueberschrift, bricht das Skript ab,
@@ -48,6 +50,8 @@ LIZENZ_URL = "https://creativecommons.org/licenses/by/4.0/deed.de"
 
 BILANZ_MUSTER = "*THG-Bilanz*.xlsx"
 FAHRPLAN_MUSTER = "*Reduktionsfahrplan*.xlsx"
+WP_MUSTER = "*Wärmepumpen*.xlsx"
+GEO_MUSTER = "*eignungsgebiete*.geojson"
 
 NS = {
     "m": "http://schemas.openxmlformats.org/spreadsheetml/2006/main",
@@ -335,6 +339,123 @@ def fahrplan(mappe):
     }
 
 
+def gebaeude(mappe):
+    """Gebaeude nach Heizungsart und Sektor: heute und im Waermenetzausbauplan 2035."""
+    b = mappe.blatt("Gebäudeübersicht")
+    arten = [("gas", "Gas"), ("oel", "Öl"), ("fernwaerme", "Fernwärme"), ("biomasse", "Biomasse"), ("strom", "Strom")]
+    sektoren = ["Privates Wohnen", "GHD", "Industrie", "Öffentlich"]
+
+    def block(titel):
+        tz, _ = b.finde(titel)
+        kz, _ = b.finde("Gebäudeübersicht", ab_zeile=tz)
+        spalten = {k: b.finde(t, zeilen={kz})[1] for k, t in arten}
+        out = {}
+        for name in sektoren:
+            z, _ = b.finde(name, ab_zeile=kz)
+            out[name] = {k: runde(b.zahl(z, sp)) for k, sp in spalten.items()}
+        return out
+
+    def summe(bl):
+        return {k: sum(v[k] for v in bl.values()) for k, _ in arten}
+
+    heute, ziel = block("Status Quo"), block("Wärmenetzausbauplan 2035")
+    return {"einheit": "Gebäude", "heute": {"sektoren": heute, "summe": summe(heute)},
+            "ziel_2035": {"sektoren": ziel, "summe": summe(ziel)}}
+
+
+def neubau(mappe):
+    """Anteile der Energietraeger bei fertiggestellten Neubauten, Ingolstadt und Bund."""
+    w = mappe.blatt("Wärme_Emissionen")
+    arten = [("gas", "Gas"), ("waermepumpe", "Wärmepumpe"), ("fernwaerme", "Fernwärme"),
+             ("stromdirekt", "Stromdirektheizung"), ("biomasse", "Biomasse"),
+             ("solarthermie", "Solarthermie"), ("oel", "Öl"), ("sonstige", "Sonstige")]
+
+    def block(titel):
+        tz, ts = w.finde(titel)
+        kz, js = w.finde("Jahr", ab_zeile=tz, ab_spalte=ts)
+        spalten = {k: w.finde(t, zeilen={kz}, ab_spalte=js)[1] for k, t in arten}
+        reihe = []
+        for j, z in sorted(w.jahre(js, kz).items()):
+            anteile = {k: w.zahl(z, sp) for k, sp in spalten.items()}
+            if any(v is None for v in anteile.values()):
+                continue
+            summe = sum(anteile.values())
+            if abs(summe - 1) > 0.02:
+                raise Fehler(f"{w.name}: Neubau-Anteile {j} summieren sich auf {summe:.3f}")
+            reihe.append({"jahr": j, **{k: runde(v * 100, 1) for k, v in anteile.items()}})
+        return reihe
+
+    return {"einheit": "Prozent der Baufertigstellungen ohne Passivhaus",
+            "ingolstadt": block("Energieträger im Neubau in Ingolstadt"),
+            "bund": block("Energieträger im Neubau in Deutschland")}
+
+
+def waermepumpen(mappe):
+    """Foerderfaelle (BAFA) pro Auszahlungsjahr. Eine Untergrenze, kein Bestand."""
+    b = mappe.blatt("Auswertung Ingolstadt")
+    titel = next((v for (z, s), v in sorted(b.zellen.items()) if z == 1 and isinstance(v, str)), "")
+    plz = re.search(r"PLZ (\d{5})", titel)
+    kz, js = b.finde("Jahr der Auszahlung")
+    gesamt = b.finde("Gesamt", zeilen={kz})[1]
+    reihe = []
+    for (z, sp), v in sorted(b.zellen.items()):
+        if sp != js or z <= kz:
+            continue
+        if isinstance(v, str) and re.match(r"\d{4}$", v):
+            v = float(v)
+        if isinstance(v, float) and 2000 <= v <= 2050:
+            reihe.append({"jahr": int(v), "anzahl": runde(b.zahl(z, gesamt) or 0), "bis": None})
+        elif isinstance(v, str) and re.match(r"bis [\d.]+\d{4}$", v):  # laufendes Jahr, z. B. "bis 31.05.2025"
+            reihe.append({"jahr": int(v[-4:]), "anzahl": runde(b.zahl(z, gesamt) or 0), "bis": v})
+    if not reihe:
+        raise Fehler(f"{b.name}: keine Jahreszeilen gefunden")
+    stand = re.search(r"Stand: ([\d.]+)", " ".join(v for v in b.zellen.values() if isinstance(v, str)))
+    zg, _ = b.finde("Gesamt", ab_zeile=kz)
+    summe = b.zahl(zg, gesamt)
+    if summe is not None and abs(summe - sum(r["anzahl"] for r in reihe)) > 0.5:
+        raise Fehler(f"{b.name}: Summe {summe} passt nicht zu den Jahreszeilen")
+    return {"werte": reihe, "plz": plz.group(1) if plz else None, "stand": stand.group(1) if stand else None,
+            "programme": "MAP, MAP20, BEG EM (BAFA)"}
+
+
+GEO_KATEGORIEN = {
+    "individual heating": ("waermepumpe", "Wärmepumpen-Prüfgebiet"),
+    "Gas/Wärmepumpen-Prüfgebiet": ("gas_waermepumpe", "Gas- oder Wärmepumpen-Prüfgebiet"),
+    "heating grid": ("waermenetz", "Wärmenetzgebiet"),
+    "Wärmenetz, geringe Priorität": ("waermenetz_gering", "Wärmenetzgebiet, geringe Priorität"),
+}
+ARBEITSTITEL = re.compile(r"^(polygon\s*\d*|redundanz\??|wärmepumpen prüfgebiet)$", re.I)
+
+
+def eignungsgebiete(pfad):
+    """Bereinigte Fassung: nur Kategorie und Name, Koordinaten auf 5 Stellen
+    (rund 1 m). Beschreibungen und Arbeitstitel bleiben draussen."""
+    with open(pfad, encoding="utf-8") as fh:
+        roh = json.load(fh)
+
+    def runden(g):
+        return [runden(x) for x in g] if isinstance(g[0], list) else [round(g[0], 5), round(g[1], 5)]
+
+    features = []
+    for f in roh["features"]:
+        k = f["properties"].get("category_name")
+        if k not in GEO_KATEGORIEN:
+            raise Fehler(f"{os.path.basename(pfad)}: unbekannte Kategorie {k!r}")
+        titel = " ".join((f["properties"].get("title") or "").split())
+        name = None if ARBEITSTITEL.match(titel) or "?" in titel else re.sub(r"^Prüfgebiet ", "", titel)
+        features.append({"type": "Feature",
+                         "properties": {"kategorie": GEO_KATEGORIEN[k][0], **({"name": name} if name else {})},
+                         "geometry": {"type": f["geometry"]["type"], "coordinates": runden(f["geometry"]["coordinates"])}})
+    zaehler = {}
+    for f in features:
+        zaehler[f["properties"]["kategorie"]] = zaehler.get(f["properties"]["kategorie"], 0) + 1
+    return {"_hinweis": "Erzeugt von scraper/stadt_einlesen.py. Arbeitsstand der Stadt Ingolstadt vom 24.01.2025, "
+                        "kein beschlossener Wärmeplan.",
+            "quelle": QUELLE, "lizenz": LIZENZ, "lizenz_url": LIZENZ_URL, "stand": "2025-01-24",
+            "kategorien": {k: {"name": n, "anzahl": zaehler.get(k, 0)} for k, n in GEO_KATEGORIEN.values()},
+            "type": "FeatureCollection", "features": features}
+
+
 # ---------------------------------------------------------------- main
 
 def eine_datei(ordner, muster):
@@ -353,6 +474,10 @@ def main():
     try:
         b = eine_datei(args.ordner, BILANZ_MUSTER)
         f = eine_datei(args.ordner, FAHRPLAN_MUSTER)
+        wp = eine_datei(args.ordner, WP_MUSTER)
+        geo = glob.glob(os.path.join(args.ordner, GEO_MUSTER))
+        if len(geo) != 1:
+            raise Fehler(f"{GEO_MUSTER} in {args.ordner}: {len(geo)} Treffer, erwartet genau einer")
         daten = {
             "_hinweis": "Erzeugt von scraper/stadt_einlesen.py aus Excel-Dateien der Stabsstelle Klima. "
                         "Nicht von Hand ändern, sondern neu einlesen.",
@@ -360,13 +485,17 @@ def main():
             "quelle": QUELLE,
             "lizenz": LIZENZ,
             "lizenz_url": LIZENZ_URL,
-            "dateien": [{"name": m.name, "stand": m.stand()} for m in (b, f)],
+            "dateien": [{"name": m.name, "stand": m.stand()} for m in (b, f, wp)],
             "thg": bilanz(b),
         }
         daten.update({
             "strom": strom(b, daten["thg"]["basisjahr"]),
             "fahrplan": fahrplan(f),
+            "gebaeude": gebaeude(f),
+            "neubau": neubau(f),
+            "waermepumpen": waermepumpen(wp),
         })
+        karte = eignungsgebiete(geo[0])
     except Fehler as e:
         print(f"FEHLER: {e}")
         return 1
@@ -385,7 +514,19 @@ def main():
     z = daten["fahrplan"]["ziele_2035"]
     print(f"Ziele 2035: PV {z['pv_dach_kwp']:,} + {z['pv_freiflaeche_kwp']:,} kWp, "
           f"Speicher {z['speicher_kwh']:,} kWh, Fernwärme {z['fernwaerme_km']} km")
-    print("Geschrieben: data/klima_stadt.json")
+    g = daten["gebaeude"]["heute"]["summe"]
+    print(f"Gebäude heute: {sum(g.values()):,}, davon Gas {g['gas']:,}; Neubau {daten['neubau']['ingolstadt'][-1]['jahr']}: "
+          f"{daten['neubau']['ingolstadt'][-1]['waermepumpe']} % Wärmepumpe")
+    print(f"Wärmepumpen (BAFA): {sum(r['anzahl'] for r in daten['waermepumpen']['werte'])} Förderfälle")
+    with open(os.path.join(DATEN_VZ, "eignungsgebiete.json"), "w", encoding="utf-8") as fh:
+        json.dump(karte, fh, ensure_ascii=False, separators=(",", ":"))
+        fh.write("\n")
+    with open(os.path.join(DATEN_VZ, "eignungsgebiete.js"), "w", encoding="utf-8") as fh:
+        fh.write("window.KD_EIGNUNG = ")
+        json.dump(karte, fh, ensure_ascii=False, separators=(",", ":"))
+        fh.write(";\n")
+    print("Eignungsgebiete:", ", ".join(f"{v['name']} {v['anzahl']}" for v in karte["kategorien"].values()))
+    print("Geschrieben: data/klima_stadt.json, data/eignungsgebiete.json, data/eignungsgebiete.js")
     return 0
 
 

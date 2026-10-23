@@ -5,8 +5,8 @@ Ein offenes Klimadashboard für Ingolstadt, angelehnt an das
 [2035.de](https://2035.de). Ein Projekt aus der Bürgerschaft in Abstimmung mit
 der Stabsstelle Klima, **kein offizielles Angebot der Stadt Ingolstadt**.
 
-**Stand:** Prototyp. Übersicht und vier Themenseiten (Wetter & Klima,
-Emissionen, Erneuerbare, Mobilität) mit interaktiven Diagrammen auf Basis
+**Stand:** Prototyp. Übersicht und fünf Themenseiten (Wetter & Klima,
+Emissionen, Erneuerbare, Wärme, Mobilität) mit interaktiven Diagrammen auf Basis
 offener Daten. Weitere Module folgen, sobald die Stadt Daten freigibt.
 
 ## Ziel
@@ -20,7 +20,7 @@ offener Daten. Weitere Module folgen, sobald die Stadt Daten freigibt.
 ## Aufbau
 
 ```
-index.html, klima.html, emissionen.html, erneuerbare.html, mobilitaet.html
+index.html, klima.html, emissionen.html, erneuerbare.html, waerme.html, mobilitaet.html
 einbetten.html        ein einzelner Baustein, zum Einbinden per iframe
 assets/kd.js          alle Bausteine (Module), Rahmen, ECharts-Theme im 2035-CI
 assets/style.css      Gestaltung nach 2035.de (Unbounded, Poppins, Farben)
@@ -45,7 +45,8 @@ python3 -m http.server 8000
 
 Jeder Baustein läuft auch einzeln: `einbetten.html?modul=NAME`. Verfügbar:
 `kennzahlen`, `wetter`, `temperatur`, `kenntage`, `reduktion`, `endenergie`,
-`thg-zeitreihe`, `strom-ee`, `pv-bestand`, `pv-zubau`, `pv-ziel`, `speicher`, `ladepunkte`, `verkehr`,
+`thg-zeitreihe`, `strom-ee`, `fernwaerme`, `heizungsarten`, `neubau`,
+`waermepumpen`, `eignungsgebiete`, `pv-bestand`, `pv-zubau`, `pv-ziel`, `speicher`, `ladepunkte`, `verkehr`,
 `luecken`.
 
 In einen WordPress-Block „Individuelles HTML“:
@@ -92,7 +93,8 @@ wenn sich etwas geändert hat. Beide lassen nur Daten durch, die
 | Deutscher Wetterdienst, Station Kösching (02700) | Jahresmittel, heiße Tage, Tropennächte, Frosttage seit 1961; Referenz 1971–2000 wie im Fortschrittsbericht |
 | Marktstammdatenregister (Gemeindeschlüssel 09161000) | Solaranlagen und Stromspeicher, nur Jahressummen |
 | Ladesäulenregister der Bundesnetzagentur | öffentliche Ladepunkte |
-| `data/klima_stadt.json` | Energie- und THG-Bilanz und Reduktionsfahrplan der Stabsstelle Klima (CC BY 4.0), nur Jahressummen |
+| `data/klima_stadt.json` | Energie- und THG-Bilanz, Reduktionsfahrplan und BAFA-Wärmepumpen der Stabsstelle Klima (CC BY 4.0), nur Jahressummen |
+| `data/eignungsgebiete.json`, `.js` | Eignungsgebiete der Wärmeplanung (Arbeitsstand 24.01.2025, CC BY 4.0), bereinigt auf Kategorie und Name |
 | `data/klima_bericht.json` | von Hand gepflegte Einzelwerte aus den Fortschrittsberichten und Auskünften der Stabsstelle Klima |
 
 Die Excel-Dateien der Stadt liegen nur lokal in `input/` (nicht im Git).
@@ -100,7 +102,7 @@ Kommt eine neue Fassung, wird sie lokal eingelesen und das Ergebnis
 committet:
 
 ```bash
-python3 scraper/stadt_einlesen.py   # schreibt data/klima_stadt.json
+python3 scraper/stadt_einlesen.py   # schreibt data/klima_stadt.json und data/eignungsgebiete.*
 cd scraper && python3 klima_bauen.py
 ```
 

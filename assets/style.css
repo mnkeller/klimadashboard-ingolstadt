@@ -140,6 +140,8 @@ a.karte:hover { transform: translateY(-3px); }
 .diagramm { width: 100%; height: 340px; }
 .diagramm.klein { height: 220px; }
 .diagramm.hoch { height: 420px; }
+.diagramm.karte-hoch { height: 520px; }
+@media (max-width: 600px) { .diagramm.karte-hoch { height: 380px; } }
 .umschalter { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 12px; }
 .umschalter button {
   font: inherit; font-size: .85rem; font-weight: 500; cursor: pointer;
@@ -184,3 +186,6 @@ a.karte:hover { transform: translateY(-3px); }
 /* ---------- Einbettung (einbetten.html) ---------- */
 body.eingebettet { background: transparent; }
 body.eingebettet .karte { margin: 0; }
+
+.legende { list-style: none; margin: 0 0 8px; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: .85rem; }
+.legende .punkt { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
